@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/com.ibm.team.workitem.ide.ui.example/src/com/ibm/team/workitem/ide/ui/example/CreateWorkItemCustomAttributesAndEnumerations.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.ibm.team.workitem.ide.ui.example.CreateWorkItemCustomAttributesAndEnumerations"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="&quot;https://clmwb.example.com:9443/ccm&quot; &quot;ralph&quot; &quot;ralph&quot; &quot;JKE Banking (Change Management)&quot; &quot;task&quot; &quot;A new Task&quot; &quot;JKE&quot; &quot;Medium&quot; &quot;tec.rtcext.attrib.string&quot; &quot;Teststring here&quot; &quot;tec.rtcext.attrib.integer&quot; &quot;999&quot; &quot;tec.rtcext.attrib.contributor&quot; &quot;bob&quot; &quot;False&quot;"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="com.ibm.team.workitem.ide.ui.example"/>
+</launchConfiguration>
