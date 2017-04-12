@@ -1,7 +1,6 @@
 package com.superware.restclient;
 
 import javax.swing.JDialog;
-import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
 import java.awt.Frame;
 
@@ -19,6 +18,10 @@ import javax.swing.Action;
 import java.awt.Color;
 
 public class LoginDialog extends JDialog {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JTextField userNameField;
 	private JTextField userNameValue;
 	private JTextField passField;
@@ -26,6 +29,7 @@ public class LoginDialog extends JDialog {
 	private JTextField sessionId;
 	private JTextField loginURL;
 	private JTextField errorURL;
+	private JButton btnLogin, btnLogout;
 	public LoginDialog(Frame frame) {
 		super(frame, true);
 		JPanel panel = new JPanel();
@@ -136,6 +140,11 @@ public class LoginDialog extends JDialog {
 	}
 	
 	private class LoginAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public LoginAction(String text, ImageIcon icon,
                 String desc) {
 			 super(text, icon);
@@ -155,7 +164,11 @@ public class LoginDialog extends JDialog {
 	                        "Login successfully!",
 	                        "Success",
 	                        JOptionPane.INFORMATION_MESSAGE);
+					source.setText("Login");
+					source.setEnabled(true);
 					setVisible(false);
+					btnLogin.setEnabled(false);
+					btnLogout.setEnabled(true);
 				}
 			} catch (Exception e1) {
 				source.setText("Login");
@@ -167,5 +180,13 @@ public class LoginDialog extends JDialog {
 				e1.printStackTrace();
 			}
 		}
+	}
+
+	public void setBtnLogin(final JButton btnLogin) {
+		this.btnLogin = btnLogin;
+	}
+
+	public void setBtnLogout(final JButton btnLogout) {
+		this.btnLogout = btnLogout;
 	}
 }

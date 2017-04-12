@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.codec.binary.StringUtils;
 import org.apache.http.HeaderIterator;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -17,8 +16,10 @@ import org.apache.http.ParseException;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
@@ -38,6 +39,15 @@ public class RESTClient {
 	// 创建CookieStore实例  
     private static CookieStore cookieStore = null;  
     private static HttpClientContext context = null; 
+    
+    public static boolean logout(){
+    	if(context == null || cookieStore == null) return true;
+    	context.setCookieSpecRegistry(null);  
+        context.setCookieStore(null);
+        cookieStore.clear();
+        context.setAttribute("login", false);
+    	return true;
+    }
     
     public static boolean login(String loginUrl, 
     						 String idField, 
@@ -128,6 +138,7 @@ public class RESTClient {
                         new BrowserCompatSpecFactory()).build();  
         context.setCookieSpecRegistry(registry);  
         context.setCookieStore(cookieStore);  
+        context.setAttribute("login", true);
     }  
   
     public static void setCookieStore(HttpResponse httpResponse, String sessionID, String domain) {  
@@ -202,7 +213,101 @@ public class RESTClient {
     public static void sendRequestWithContext(String url, String method, String data) throws Exception {  
         //System.out.println("----sendRequestWithContext");  
         // 使用context方式  
-        CloseableHttpClient client = HttpClients.createDefault();  
+        CloseableHttpClient client = HttpClients.createDefault();
+        if(context != null && (boolean) context.getAttribute("login")){
+        	if(method.equals("POST") && data != null && !data.trim().equals("")){
+            	HttpPost postRequest = new HttpPost(url);
+            	System.out.println(method + " request line:" + postRequest.getRequestLine());  
+    			StringEntity input = new StringEntity(data);
+    			input.setContentType("application/json");
+    			postRequest.setEntity(input);
+    			try {  
+                    // 执行get请求  
+                    HttpResponse httpResponse = client.execute(postRequest, context);  
+                    //System.out.println("cookie store:" + cookieStore.getCookies());  
+                    printResponse(httpResponse);  
+                } catch (IOException e) {  
+                    e.printStackTrace();  
+                } finally {  
+                    try {  
+                        // 关闭流并释放资源  
+                        client.close();  
+                    } catch (IOException e) {  
+                        e.printStackTrace();  
+                    }  
+                }  
+    			return;
+            }
+        	
+        	if(method.equals("PUT") && data != null){
+            	HttpPut putRequest = new HttpPut(url);
+            	System.out.println(method + " request line:" + putRequest.getRequestLine());  
+    			StringEntity input = new StringEntity(data);
+    			input.setContentType("application/json");
+    			putRequest.setEntity(input);
+    			try {  
+                    // 执行put请求  
+                    HttpResponse httpResponse = client.execute(putRequest, context);  
+                    //System.out.println("cookie store:" + cookieStore.getCookies());  
+                    printResponse(httpResponse);  
+                } catch (IOException e) {  
+                    e.printStackTrace();  
+                } finally {  
+                    try {  
+                        // 关闭流并释放资源  
+                        client.close();  
+                    } catch (IOException e) {  
+                        e.printStackTrace();  
+                    }  
+                }  
+    			return;
+            } 
+
+            if(method.equals("DELETE")){
+            	HttpDelete httpDelete = new HttpDelete(url);  
+    	        System.out.println(method + " request line:" + httpDelete.getRequestLine());  
+    	        try {  
+    	            // 执行delete请求  
+    	            HttpResponse httpResponse = client.execute(httpDelete, context);  
+    	            //System.out.println("context cookies:"  
+    	            //        + context.getCookieStore().getCookies());  
+    	            printResponse(httpResponse);  
+    	        } catch (IOException e) {  
+    	            e.printStackTrace();  
+    	        } finally {  
+    	            try {  
+    	                // 关闭流并释放资源  
+    	                client.close();  
+    	            } catch (IOException e) {  
+    	                e.printStackTrace();  
+    	            }  
+    	        }
+    	        return;
+            }
+
+        	if(method.equals("GET")){
+    	        HttpGet httpGet = new HttpGet(url);  
+    	        System.out.println(method + " request line:" + httpGet.getRequestLine());  
+    	        try {  
+    	            // 执行get请求  
+    	            HttpResponse httpResponse = client.execute(httpGet, context);  
+    	            //System.out.println("context cookies:"  
+    	            //        + context.getCookieStore().getCookies());  
+    	            printResponse(httpResponse);  
+    	        } catch (IOException e) {  
+    	            e.printStackTrace();  
+    	        } finally {  
+    	            try {  
+    	                // 关闭流并释放资源  
+    	                client.close();  
+    	            } catch (IOException e) {  
+    	                e.printStackTrace();  
+    	            }  
+    	        }
+            }
+        	return;
+        }
+        
         if(method.equals("POST") && data != null && !data.trim().equals("")){
         	HttpPost postRequest = new HttpPost(url);
         	System.out.println(method + " request line:" + postRequest.getRequestLine());  
@@ -210,8 +315,8 @@ public class RESTClient {
 			input.setContentType("application/json");
 			postRequest.setEntity(input);
 			try {  
-                // 执行get请求  
-                HttpResponse httpResponse = client.execute(postRequest, context);  
+                // 执行post请求  
+                HttpResponse httpResponse = client.execute(postRequest);  
                 //System.out.println("cookie store:" + cookieStore.getCookies());  
                 printResponse(httpResponse);  
             } catch (IOException e) {  
@@ -224,12 +329,39 @@ public class RESTClient {
                     e.printStackTrace();  
                 }  
             }  
-        } else {
-	        HttpGet httpGet = new HttpGet(url);  
-	        System.out.println(method + " request line:" + httpGet.getRequestLine());  
+			return;
+        } 
+        
+        if(method.equals("PUT") && data != null){
+        	HttpPut putRequest = new HttpPut(url);
+        	System.out.println(method + " request line:" + putRequest.getRequestLine());  
+			StringEntity input = new StringEntity(data);
+			input.setContentType("application/json");
+			putRequest.setEntity(input);
+			try {  
+                // 执行put请求  
+                HttpResponse httpResponse = client.execute(putRequest);  
+                //System.out.println("cookie store:" + cookieStore.getCookies());  
+                printResponse(httpResponse);  
+            } catch (IOException e) {  
+                e.printStackTrace();  
+            } finally {  
+                try {  
+                    // 关闭流并释放资源  
+                    client.close();  
+                } catch (IOException e) {  
+                    e.printStackTrace();  
+                }  
+            }  
+			return;
+        } 
+
+        if(method.equals("DELETE")){
+        	HttpDelete httpDelete = new HttpDelete(url);  
+	        System.out.println(method + " request line:" + httpDelete.getRequestLine());  
 	        try {  
-	            // 执行get请求  
-	            HttpResponse httpResponse = client.execute(httpGet, context);  
+	            // 执行delete请求  
+	            HttpResponse httpResponse = client.execute(httpDelete);  
 	            //System.out.println("context cookies:"  
 	            //        + context.getCookieStore().getCookies());  
 	            printResponse(httpResponse);  
@@ -243,7 +375,32 @@ public class RESTClient {
 	                e.printStackTrace();  
 	            }  
 	        }
+	        return;
         }
+        
+        if(method.equals("GET")){
+	        HttpGet httpGet = new HttpGet(url);  
+	        System.out.println(method + " request line:" + httpGet.getRequestLine());  
+	        try {  
+	            // 执行get请求  
+	            HttpResponse httpResponse = client.execute(httpGet);  
+	            //System.out.println("context cookies:"  
+	            //        + context.getCookieStore().getCookies());  
+	            printResponse(httpResponse);  
+	        } catch (IOException e) {  
+	            e.printStackTrace();  
+	        } finally {  
+	            try {  
+	                // 关闭流并释放资源  
+	                client.close();  
+	            } catch (IOException e) {  
+	                e.printStackTrace();  
+	            }  
+	        }
+	        return;
+        }
+        
+        System.out.println(method + " Not Found!");  
     }
     
     /**

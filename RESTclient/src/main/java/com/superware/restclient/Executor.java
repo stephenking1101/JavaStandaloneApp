@@ -26,7 +26,7 @@ public class Executor {
 					
 					RESTClientFrame frame = new RESTClientFrame();
 					frame.setLocation(100, 100);
-					frame.setSize(550, 350);
+					frame.setSize(650, 500);
 					frame.setLocationRelativeTo(null);
 					frame.setVisible(true);
 					frame.setResizable(true);
