@@ -1,0 +1,1 @@
+The library of Rational Team Concert must be added in classpath

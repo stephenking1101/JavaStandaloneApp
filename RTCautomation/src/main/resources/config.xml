@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+	<variables>
+		<variable name="automationHome" value="C:\Temp\rtcautomationtool" />
+	</variables>
+	<category name="LoginInfo">
+		<property name="userId" value="43334612" />
+		<property name="password" value="Shu@edc" />
+	</category>
+	<category name="RTC">
+	    <property name="UAT" value="https://g3softwaredeploy-uat.systems.uk.hsbc:9104/jazz" />
+		<property name="9092" value="https://jtsrv.uk.hibm.ibm:9092/jazz" /> 
+		<property name="9094" value="https://jtsrv.uk.hibm.ibm:9094/jazz" /> 
+		<property name="G3" value="https://g3softwaredeploy.it.global.hsbc:9097/jazz" />
+	</category>
+</properties>
