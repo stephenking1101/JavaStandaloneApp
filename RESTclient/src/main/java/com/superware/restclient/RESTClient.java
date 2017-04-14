@@ -36,7 +36,7 @@ import org.apache.http.util.EntityUtils;
 
 public class RESTClient {
 
-	// ´´½¨CookieStoreÊµÀı  
+	// åˆ›å»ºCookieStoreå®ä¾‹  
     private static CookieStore cookieStore = null;  
     private static HttpClientContext context = null; 
     
@@ -68,7 +68,7 @@ public class RESTClient {
         httpPost.setEntity(postEntity);  
         //System.out.println("request line:" + httpPost.getRequestLine());  
         try {  
-            // Ö´ĞĞpostÇëÇó  
+            // æ‰§è¡Œpostè¯·æ±‚  
             HttpResponse httpResponse = client.execute(httpPost);  
             String location = httpResponse.getFirstHeader("Location")  
                     .getValue();  
@@ -87,7 +87,7 @@ public class RESTClient {
             throw new Exception(e.getMessage());
         } finally {  
             try {  
-                // ¹Ø±ÕÁ÷²¢ÊÍ·Å×ÊÔ´  
+                // å…³é—­æµå¹¶é‡Šæ”¾èµ„æº  
                 client.close();  
             } catch (IOException e) {  
                 e.printStackTrace();
@@ -110,16 +110,16 @@ public class RESTClient {
     
     public static void printResponse(HttpResponse httpResponse)  
             throws ParseException, IOException {  
-        // »ñÈ¡ÏìÓ¦ÏûÏ¢ÊµÌå  
+        // è·å–å“åº”æ¶ˆæ¯å®ä½“  
         HttpEntity entity = httpResponse.getEntity();  
-        // ÏìÓ¦×´Ì¬  
-        System.out.println("status:" + httpResponse.getStatusLine());  
-        System.out.println("headers:");  
+        // å“åº”çŠ¶æ€  
+        System.out.println("response status:" + httpResponse.getStatusLine());  
+        System.out.println("response headers:");  
         HeaderIterator iterator = httpResponse.headerIterator();  
         while (iterator.hasNext()) {  
             System.out.println("\t" + iterator.next());  
         }  
-        // ÅĞ¶ÏÏìÓ¦ÊµÌåÊÇ·ñÎª¿Õ  
+        // åˆ¤æ–­å“åº”å®ä½“æ˜¯å¦ä¸ºç©º  
         if (entity != null) {  
             String responseString = EntityUtils.toString(entity);  
             System.out.println("response length:" + responseString.length());  
@@ -150,7 +150,7 @@ public class RESTClient {
         String JSESSIONID = setCookie.substring((sessionID + "=").length(),  
                 setCookie.indexOf(";"));  
         //System.out.println(sessionID + ":" + JSESSIONID);  
-        // ĞÂ½¨Ò»¸öCookie  
+        // æ–°å»ºä¸€ä¸ªCookie  
         BasicClientCookie cookie = new BasicClientCookie(sessionID,  
                 JSESSIONID);  
         cookie.setVersion(0);  
@@ -165,7 +165,7 @@ public class RESTClient {
     
     public static void sendRequestWithCookieStore(String url, String method, String data) throws Exception {  
         //System.out.println("----sendRequestWithCookieStore");  
-        // Ê¹ÓÃcookieStore·½Ê½  
+        // ä½¿ç”¨cookieStoreæ–¹å¼  
         CloseableHttpClient client = HttpClients.custom()  
                 .setDefaultCookieStore(cookieStore).build();  
         if(method.equals("POST") && data != null && !data.trim().equals("")){
@@ -175,7 +175,7 @@ public class RESTClient {
 			input.setContentType("application/json");
 			postRequest.setEntity(input);
 			try {  
-                // Ö´ĞĞgetÇëÇó  
+                // æ‰§è¡Œgetè¯·æ±‚  
                 HttpResponse httpResponse = client.execute(postRequest);  
                 //System.out.println("cookie store:" + cookieStore.getCookies());  
                 printResponse(httpResponse);  
@@ -183,7 +183,7 @@ public class RESTClient {
                 e.printStackTrace();  
             } finally {  
                 try {  
-                    // ¹Ø±ÕÁ÷²¢ÊÍ·Å×ÊÔ´  
+                    // å…³é—­æµå¹¶é‡Šæ”¾èµ„æº  
                     client.close();  
                 } catch (IOException e) {  
                     e.printStackTrace();  
@@ -193,7 +193,7 @@ public class RESTClient {
         	HttpGet httpGet = new HttpGet(url);  
             System.out.println(method + " request line:" + httpGet.getRequestLine());  
             try {  
-                // Ö´ĞĞgetÇëÇó  
+                // æ‰§è¡Œgetè¯·æ±‚  
                 HttpResponse httpResponse = client.execute(httpGet);  
                 //System.out.println("cookie store:" + cookieStore.getCookies());  
                 printResponse(httpResponse);  
@@ -201,7 +201,7 @@ public class RESTClient {
                 e.printStackTrace();  
             } finally {  
                 try {  
-                    // ¹Ø±ÕÁ÷²¢ÊÍ·Å×ÊÔ´  
+                    // å…³é—­æµå¹¶é‡Šæ”¾èµ„æº  
                     client.close();  
                 } catch (IOException e) {  
                     e.printStackTrace();  
@@ -212,7 +212,7 @@ public class RESTClient {
     
     public static void sendRequestWithContext(String url, String method, String data) throws Exception {  
         //System.out.println("----sendRequestWithContext");  
-        // Ê¹ÓÃcontext·½Ê½  
+        // ä½¿ç”¨contextæ–¹å¼  
         CloseableHttpClient client = HttpClients.createDefault();
         if(context != null && (boolean) context.getAttribute("login")){
         	if(method.equals("POST") && data != null && !data.trim().equals("")){
@@ -222,7 +222,7 @@ public class RESTClient {
     			input.setContentType("application/json");
     			postRequest.setEntity(input);
     			try {  
-                    // Ö´ĞĞgetÇëÇó  
+                    // æ‰§è¡Œgetè¯·æ±‚  
                     HttpResponse httpResponse = client.execute(postRequest, context);  
                     //System.out.println("cookie store:" + cookieStore.getCookies());  
                     printResponse(httpResponse);  
@@ -230,7 +230,7 @@ public class RESTClient {
                     e.printStackTrace();  
                 } finally {  
                     try {  
-                        // ¹Ø±ÕÁ÷²¢ÊÍ·Å×ÊÔ´  
+                        // å…³é—­æµå¹¶é‡Šæ”¾èµ„æº  
                         client.close();  
                     } catch (IOException e) {  
                         e.printStackTrace();  
@@ -246,7 +246,7 @@ public class RESTClient {
     			input.setContentType("application/json");
     			putRequest.setEntity(input);
     			try {  
-                    // Ö´ĞĞputÇëÇó  
+                    // æ‰§è¡Œputè¯·æ±‚  
                     HttpResponse httpResponse = client.execute(putRequest, context);  
                     //System.out.println("cookie store:" + cookieStore.getCookies());  
                     printResponse(httpResponse);  
@@ -254,7 +254,7 @@ public class RESTClient {
                     e.printStackTrace();  
                 } finally {  
                     try {  
-                        // ¹Ø±ÕÁ÷²¢ÊÍ·Å×ÊÔ´  
+                        // å…³é—­æµå¹¶é‡Šæ”¾èµ„æº  
                         client.close();  
                     } catch (IOException e) {  
                         e.printStackTrace();  
@@ -267,7 +267,7 @@ public class RESTClient {
             	HttpDelete httpDelete = new HttpDelete(url);  
     	        System.out.println(method + " request line:" + httpDelete.getRequestLine());  
     	        try {  
-    	            // Ö´ĞĞdeleteÇëÇó  
+    	            // æ‰§è¡Œdeleteè¯·æ±‚  
     	            HttpResponse httpResponse = client.execute(httpDelete, context);  
     	            //System.out.println("context cookies:"  
     	            //        + context.getCookieStore().getCookies());  
@@ -276,7 +276,7 @@ public class RESTClient {
     	            e.printStackTrace();  
     	        } finally {  
     	            try {  
-    	                // ¹Ø±ÕÁ÷²¢ÊÍ·Å×ÊÔ´  
+    	                // å…³é—­æµå¹¶é‡Šæ”¾èµ„æº  
     	                client.close();  
     	            } catch (IOException e) {  
     	                e.printStackTrace();  
@@ -289,7 +289,7 @@ public class RESTClient {
     	        HttpGet httpGet = new HttpGet(url);  
     	        System.out.println(method + " request line:" + httpGet.getRequestLine());  
     	        try {  
-    	            // Ö´ĞĞgetÇëÇó  
+    	            // æ‰§è¡Œgetè¯·æ±‚  
     	            HttpResponse httpResponse = client.execute(httpGet, context);  
     	            //System.out.println("context cookies:"  
     	            //        + context.getCookieStore().getCookies());  
@@ -298,7 +298,7 @@ public class RESTClient {
     	            e.printStackTrace();  
     	        } finally {  
     	            try {  
-    	                // ¹Ø±ÕÁ÷²¢ÊÍ·Å×ÊÔ´  
+    	                // å…³é—­æµå¹¶é‡Šæ”¾èµ„æº  
     	                client.close();  
     	            } catch (IOException e) {  
     	                e.printStackTrace();  
@@ -315,7 +315,7 @@ public class RESTClient {
 			input.setContentType("application/json");
 			postRequest.setEntity(input);
 			try {  
-                // Ö´ĞĞpostÇëÇó  
+                // æ‰§è¡Œpostè¯·æ±‚  
                 HttpResponse httpResponse = client.execute(postRequest);  
                 //System.out.println("cookie store:" + cookieStore.getCookies());  
                 printResponse(httpResponse);  
@@ -323,7 +323,7 @@ public class RESTClient {
                 e.printStackTrace();  
             } finally {  
                 try {  
-                    // ¹Ø±ÕÁ÷²¢ÊÍ·Å×ÊÔ´  
+                    // å…³é—­æµå¹¶é‡Šæ”¾èµ„æº  
                     client.close();  
                 } catch (IOException e) {  
                     e.printStackTrace();  
@@ -339,7 +339,7 @@ public class RESTClient {
 			input.setContentType("application/json");
 			putRequest.setEntity(input);
 			try {  
-                // Ö´ĞĞputÇëÇó  
+                // æ‰§è¡Œputè¯·æ±‚  
                 HttpResponse httpResponse = client.execute(putRequest);  
                 //System.out.println("cookie store:" + cookieStore.getCookies());  
                 printResponse(httpResponse);  
@@ -347,7 +347,7 @@ public class RESTClient {
                 e.printStackTrace();  
             } finally {  
                 try {  
-                    // ¹Ø±ÕÁ÷²¢ÊÍ·Å×ÊÔ´  
+                    // å…³é—­æµå¹¶é‡Šæ”¾èµ„æº  
                     client.close();  
                 } catch (IOException e) {  
                     e.printStackTrace();  
@@ -360,7 +360,7 @@ public class RESTClient {
         	HttpDelete httpDelete = new HttpDelete(url);  
 	        System.out.println(method + " request line:" + httpDelete.getRequestLine());  
 	        try {  
-	            // Ö´ĞĞdeleteÇëÇó  
+	            // æ‰§è¡Œdeleteè¯·æ±‚  
 	            HttpResponse httpResponse = client.execute(httpDelete);  
 	            //System.out.println("context cookies:"  
 	            //        + context.getCookieStore().getCookies());  
@@ -369,7 +369,7 @@ public class RESTClient {
 	            e.printStackTrace();  
 	        } finally {  
 	            try {  
-	                // ¹Ø±ÕÁ÷²¢ÊÍ·Å×ÊÔ´  
+	                // å…³é—­æµå¹¶é‡Šæ”¾èµ„æº  
 	                client.close();  
 	            } catch (IOException e) {  
 	                e.printStackTrace();  
@@ -382,7 +382,7 @@ public class RESTClient {
 	        HttpGet httpGet = new HttpGet(url);  
 	        System.out.println(method + " request line:" + httpGet.getRequestLine());  
 	        try {  
-	            // Ö´ĞĞgetÇëÇó  
+	            // æ‰§è¡Œgetè¯·æ±‚  
 	            HttpResponse httpResponse = client.execute(httpGet);  
 	            //System.out.println("context cookies:"  
 	            //        + context.getCookieStore().getCookies());  
@@ -391,7 +391,7 @@ public class RESTClient {
 	            e.printStackTrace();  
 	        } finally {  
 	            try {  
-	                // ¹Ø±ÕÁ÷²¢ÊÍ·Å×ÊÔ´  
+	                // å…³é—­æµå¹¶é‡Šæ”¾èµ„æº  
 	                client.close();  
 	            } catch (IOException e) {  
 	                e.printStackTrace();  
