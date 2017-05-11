@@ -1,6 +1,9 @@
 package com.superware.restclient;
 
+import java.io.Closeable;
 import java.io.IOException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,6 +17,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.ParseException;
 import org.apache.http.client.CookieStore;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
@@ -23,11 +27,16 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
+import org.apache.http.conn.ssl.SSLContextBuilder;
+import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.cookie.CookieSpecProvider;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.impl.cookie.BestMatchSpecFactory;
 import org.apache.http.impl.cookie.BrowserCompatSpecFactory;
@@ -58,7 +67,16 @@ public class RESTClient {
     						 String sessionID) throws Exception {  
         System.out.println("----Logging in");  
  
-        CloseableHttpClient client = HttpClients.createDefault();  
+        //CloseableHttpClient client = HttpClients.createDefault();
+        CloseableHttpClient client = HttpClients.custom().
+                setHostnameVerifier(new AllowAllHostnameVerifier()).
+                setSslcontext(new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy()
+                {
+                    public boolean isTrusted(X509Certificate[] arg0, String arg1) throws CertificateException
+                    {
+                        return true;
+                    }
+                }).build()).build();
   
         HttpPost httpPost = new HttpPost(loginUrl);  
         Map<String, String> parameterMap = new HashMap<String, String>();  
@@ -113,8 +131,8 @@ public class RESTClient {
         // 获取响应消息实体  
         HttpEntity entity = httpResponse.getEntity();  
         // 响应状态  
-        System.out.println("status:" + httpResponse.getStatusLine());  
-        System.out.println("headers:");  
+        System.out.println("response status:" + httpResponse.getStatusLine());  
+        System.out.println("response headers:");  
         HeaderIterator iterator = httpResponse.headerIterator();  
         while (iterator.hasNext()) {  
             System.out.println("\t" + iterator.next());  
@@ -213,9 +231,20 @@ public class RESTClient {
     public static void sendRequestWithContext(String url, String method, String data) throws Exception {  
         //System.out.println("----sendRequestWithContext");  
         // 使用context方式  
-        CloseableHttpClient client = HttpClients.createDefault();
+        //CloseableHttpClient client = HttpClients.createDefault();
+    	System.out.println();
+        HttpClient client = HttpClientBuilder.create().
+                setRedirectStrategy(new RESTClientRedirectStrategy()).
+                setHostnameVerifier(new AllowAllHostnameVerifier()).
+                setSslcontext(new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy()
+                {
+                    public boolean isTrusted(X509Certificate[] arg0, String arg1) throws CertificateException
+                    {
+                        return true;
+                    }
+                }).build()).build();
         if(context != null && (boolean) context.getAttribute("login")){
-        	if(method.equals("POST") && data != null && !data.trim().equals("")){
+        	if(method.equals("POST") && data != null){
             	HttpPost postRequest = new HttpPost(url);
             	System.out.println(method + " request line:" + postRequest.getRequestLine());  
     			StringEntity input = new StringEntity(data);
@@ -231,7 +260,7 @@ public class RESTClient {
                 } finally {  
                     try {  
                         // 关闭流并释放资源  
-                        client.close();  
+                        ((Closeable) client).close();  
                     } catch (IOException e) {  
                         e.printStackTrace();  
                     }  
@@ -248,14 +277,14 @@ public class RESTClient {
     			try {  
                     // 执行put请求  
                     HttpResponse httpResponse = client.execute(putRequest, context);  
-                    //System.out.println("cookie store:" + cookieStore.getCookies());  
+                    //System.out.println("cookie store:" + context.getCookieStore().getCookies());  
                     printResponse(httpResponse);  
                 } catch (IOException e) {  
                     e.printStackTrace();  
                 } finally {  
                     try {  
                         // 关闭流并释放资源  
-                        client.close();  
+                        ((Closeable) client).close();  
                     } catch (IOException e) {  
                         e.printStackTrace();  
                     }  
@@ -277,7 +306,7 @@ public class RESTClient {
     	        } finally {  
     	            try {  
     	                // 关闭流并释放资源  
-    	                client.close();  
+    	                ((Closeable) client).close();  
     	            } catch (IOException e) {  
     	                e.printStackTrace();  
     	            }  
@@ -299,7 +328,7 @@ public class RESTClient {
     	        } finally {  
     	            try {  
     	                // 关闭流并释放资源  
-    	                client.close();  
+    	                ((Closeable) client).close();  
     	            } catch (IOException e) {  
     	                e.printStackTrace();  
     	            }  
@@ -308,7 +337,7 @@ public class RESTClient {
         	return;
         }
         
-        if(method.equals("POST") && data != null && !data.trim().equals("")){
+        if(method.equals("POST") && data != null){
         	HttpPost postRequest = new HttpPost(url);
         	System.out.println(method + " request line:" + postRequest.getRequestLine());  
 			StringEntity input = new StringEntity(data);
@@ -324,7 +353,7 @@ public class RESTClient {
             } finally {  
                 try {  
                     // 关闭流并释放资源  
-                    client.close();  
+                    ((Closeable) client).close();  
                 } catch (IOException e) {  
                     e.printStackTrace();  
                 }  
@@ -348,7 +377,7 @@ public class RESTClient {
             } finally {  
                 try {  
                     // 关闭流并释放资源  
-                    client.close();  
+                    ((Closeable) client).close();  
                 } catch (IOException e) {  
                     e.printStackTrace();  
                 }  
@@ -370,7 +399,7 @@ public class RESTClient {
 	        } finally {  
 	            try {  
 	                // 关闭流并释放资源  
-	                client.close();  
+	                ((Closeable) client).close();  
 	            } catch (IOException e) {  
 	                e.printStackTrace();  
 	            }  
@@ -392,7 +421,7 @@ public class RESTClient {
 	        } finally {  
 	            try {  
 	                // 关闭流并释放资源  
-	                client.close();  
+	                ((Closeable) client).close();  
 	            } catch (IOException e) {  
 	                e.printStackTrace();  
 	            }  
