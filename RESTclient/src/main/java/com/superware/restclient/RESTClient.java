@@ -36,7 +36,6 @@ import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.impl.cookie.BestMatchSpecFactory;
 import org.apache.http.impl.cookie.BrowserCompatSpecFactory;
@@ -130,8 +129,7 @@ public class RESTClient {
             throws ParseException, IOException {  
         // 获取响应消息实体  
         HttpEntity entity = httpResponse.getEntity();  
-
-        // ��Ӧ״̬  
+        // 响应状态  
         System.out.println("response status:" + httpResponse.getStatusLine());  
         System.out.println("response headers:");  
         HeaderIterator iterator = httpResponse.headerIterator();  
@@ -231,8 +229,7 @@ public class RESTClient {
     
     public static void sendRequestWithContext(String url, String method, String data) throws Exception {  
         //System.out.println("----sendRequestWithContext");  
-
-        // ʹ��context��ʽ  
+        // 使用context方式  
         //CloseableHttpClient client = HttpClients.createDefault();
     	System.out.println();
         HttpClient client = HttpClientBuilder.create().
@@ -245,7 +242,6 @@ public class RESTClient {
                         return true;
                     }
                 }).build()).build();
-
         if(context != null && (boolean) context.getAttribute("login")){
         	if(method.equals("POST") && data != null){
             	HttpPost postRequest = new HttpPost(url);
@@ -262,7 +258,7 @@ public class RESTClient {
                     e.printStackTrace();  
                 } finally {  
                     try {  
-                        // �ر������ͷ���Դ  
+                        // 关闭流并释放资源  
                         ((Closeable) client).close();  
                     } catch (IOException e) {  
                         e.printStackTrace();  
@@ -286,6 +282,7 @@ public class RESTClient {
                     e.printStackTrace();  
                 } finally {  
                     try {  
+                        // 关闭流并释放资源  
                         ((Closeable) client).close();  
                     } catch (IOException e) {  
                         e.printStackTrace();  
@@ -307,6 +304,7 @@ public class RESTClient {
     	            e.printStackTrace();  
     	        } finally {  
     	            try {  
+    	                // 关闭流并释放资源  
     	                ((Closeable) client).close();  
     	            } catch (IOException e) {  
     	                e.printStackTrace();  
@@ -328,6 +326,7 @@ public class RESTClient {
     	            e.printStackTrace();  
     	        } finally {  
     	            try {  
+    	                // 关闭流并释放资源  
     	                ((Closeable) client).close();  
     	            } catch (IOException e) {  
     	                e.printStackTrace();  
@@ -352,6 +351,7 @@ public class RESTClient {
                 e.printStackTrace();  
             } finally {  
                 try {  
+                    // 关闭流并释放资源  
                     ((Closeable) client).close();  
                 } catch (IOException e) {  
                     e.printStackTrace();  
@@ -375,7 +375,7 @@ public class RESTClient {
                 e.printStackTrace();  
             } finally {  
                 try {  
-                    // �ر������ͷ���Դ  
+                    // 关闭流并释放资源  
                     ((Closeable) client).close();  
                 } catch (IOException e) {  
                     e.printStackTrace();  
@@ -397,7 +397,7 @@ public class RESTClient {
 	            e.printStackTrace();  
 	        } finally {  
 	            try {  
-	                // �ر������ͷ���Դ  
+	                // 关闭流并释放资源  
 	                ((Closeable) client).close();  
 	            } catch (IOException e) {  
 	                e.printStackTrace();  
@@ -419,7 +419,7 @@ public class RESTClient {
 	            e.printStackTrace();  
 	        } finally {  
 	            try {  
-	                // �ر������ͷ���Դ  
+	                // 关闭流并释放资源  
 	                ((Closeable) client).close();  
 	            } catch (IOException e) {  
 	                e.printStackTrace();  
