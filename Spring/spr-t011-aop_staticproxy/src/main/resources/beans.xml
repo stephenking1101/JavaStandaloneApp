@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans>
+	
+	<bean id="bookDao" class="com.golearning.training.spr.lesson.dao.impl.hibernate.BookDAOHibernateImpl"/>
+	
+	<bean id="bookDaoProxy" class="com.golearning.training.spr.lesson.sproxy.BookDAOProxy">
+		<prop name="dao" value="bookDao"/>
+	</bean>	
+	
+	<bean id="bookSrv" class="com.golearning.training.spr.lesson.business.BookSrv">
+		<prop name="bookDao" value="bookDaoProxy" />
+	</bean>		
+
+</beans>

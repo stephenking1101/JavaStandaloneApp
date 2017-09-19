@@ -1,0 +1,1 @@
+bookDAO=com.golearning.training.spr.lesson.dao.impl.hibernate.BookDAOHibernateImpl

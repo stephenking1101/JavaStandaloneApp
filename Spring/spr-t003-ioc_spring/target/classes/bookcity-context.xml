@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+	"http://www.springframework.org/dtd/spring-beans.dtd">
+
+
+<beans>
+	<!-- 
+	
+ 	-->
+
+	<bean class="com.golearning.training.spr.lesson.iocextend.BookCityBeanFactoryPostProcesser"/>
+
+
+	<bean id="findMethodReplacer" class="com.golearning.training.spr.lesson.iocextend.FindMethodReplacer">
+		<property name="bookDao"><ref bean="bookDao1"/></property> 
+	</bean>
+
+	<bean id="bookDao1" class="com.golearning.training.spr.lesson.dao.impl.hibernate.BookDAOHibernateImpl">
+	</bean>
+ 	
+	<bean id="bookDao" class="com.golearning.training.spr.lesson.dao.impl.hibernate.BookDAOHibernateImpl">
+		<replaced-method name="findAll" replacer="findMethodReplacer"/>
+	</bean>
+
+	<bean id="bookSrv" class="com.golearning.training.spr.lesson.business.BookSrv">
+		<property name="bookDao"><ref bean="bookDao"/></property>
+	</bean>
+			
+
+</beans>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+	"http://www.springframework.org/dtd/spring-beans.dtd">
+
+
+<beans>
+
+	<bean id="bookDao" class="com.golearning.training.spr.lesson.dao.impl.hibernate.BookDAOHibernateImpl"/>
+	
+	<bean id="abstractBookSrv" abstract="true">
+		<property name="bookDao"><ref bean="bookDao"/></property>
+	</bean>
+
+	<bean id="bookSrv" class="com.golearning.training.spr.lesson.business.BookSrv" parent="abstractBookSrv">
+		<property name="count" value="18"/>
+	</bean>
+	
+	<bean id="shoppingSrv" class="com.golearning.training.spr.lesson.business.ShoppingSrv" parent="abstractBookSrv">
+	</bean>
+
+	<bean id="orderSrv" class="com.golearning.training.spr.lesson.business.OrderSrv" parent="abstractBookSrv">
+	</bean>
+
+</beans>

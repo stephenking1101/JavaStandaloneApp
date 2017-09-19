@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+	"http://www.springframework.org/dtd/spring-beans.dtd">
+
+
+<beans>
+	
+		
+	
+	<bean id="traceThrowsAdvice" class="com.golearning.training.spr.lesson.aop.TraceThorwsAdvice">
+	</bean>
+	
+	<bean id="traceThrowAdvisor" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+		<property name="advice" ref="traceThrowsAdvice" />
+		<property name="pattern" value=".*buy" />
+	</bean>
+	
+	<bean id="shopCartSrvTarget" class="com.golearning.training.spr.lesson.business.ShopCartSrv">
+	</bean>
+	
+	<bean id="shopCartSrv" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="target" ref="shopCartSrvTarget"/>
+		<property name="proxyInterfaces">
+			<list>
+   				<value>com.golearning.training.spr.lesson.business.INamedService</value>
+   				<value>com.golearning.training.spr.lesson.business.IShopCartSrv</value>
+   			</list>
+  		</property>
+		<property name="interceptorNames">
+			<list>
+				<value>traceThrowAdvisor</value>
+				<value>nameServiceAdvisor</value>
+			</list>
+		</property>
+	</bean>	
+	
+	
+	<bean id="nameServiceAdvice" class="com.golearning.training.spr.lesson.aop.NameServiceAdvice"/>
+	
+	<bean id="nameServiceAdvisor" class="org.springframework.aop.support.DefaultIntroductionAdvisor">
+		<constructor-arg ref="nameServiceAdvice"/>
+	</bean>
+
+</beans>

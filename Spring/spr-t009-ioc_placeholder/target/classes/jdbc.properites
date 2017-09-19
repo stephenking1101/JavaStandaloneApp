@@ -1,0 +1,4 @@
+database.url=jdbc:hsqldb:mem:training
+database.driver=org.hsqldb.jdbcDriver
+database.user=sa
+database.password=password

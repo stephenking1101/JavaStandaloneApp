@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+	"http://www.springframework.org/dtd/spring-beans.dtd">
+
+
+<beans>
+	
+	<bean id="bookDaoTarget" class="com.golearning.training.spr.lesson.dao.impl.hibernate.BookDAOHibernateImpl"/>
+	
+	<bean id="traceBeforeAdvice" class="com.golearning.training.spr.lesson.aop.TraceBeforeAdvice" />
+
+	<bean id="traceAfterReturningAdvice" class="com.golearning.training.spr.lesson.aop.TraceAfterReturningAdvice" />
+
+	<bean id="traceAroundAdvice" class="com.golearning.training.spr.lesson.aop.TraceAroundAdvice" />
+	
+	<bean id="tracePointcut" class="org.springframework.aop.support.JdkRegexpMethodPointcut">
+		<property name="pattern" value=".*find.*"/>
+	</bean>
+	
+	<bean id="traceBeforeAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+		<property name="advice" ref="traceBeforeAdvice" />
+		<property name="pointcut" ref="tracePointcut" />
+	</bean>
+	
+	<bean id="traceAfterReturningAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+		<property name="advice" ref="traceAfterReturningAdvice" />
+		<property name="pointcut" ref="tracePointcut" />
+	</bean>
+	
+	<bean id="traceAroundAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+		<property name="advice" ref="traceAroundAdvice" />
+		<property name="pointcut" ref="tracePointcut" />
+	</bean>
+
+	<bean id="bookDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="target" ref="bookDaoTarget"/>
+		<property name="interceptorNames">
+			<list>
+				<value>allTraceAdvisor</value>
+			</list>
+		</property>
+	</bean>
+	
+	
+	<bean id="bookSrv" class="com.golearning.training.spr.lesson.business.BookSrv">
+		<property name="bookDao"><ref bean="bookDao"/></property>
+	</bean>	
+	
+	<bean id="allTraceAdvice" class="com.golearning.training.spr.lesson.aop.AllTraceAdvice"/>
+	
+	<bean id="allTraceAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+		<property name="advice" ref="allTraceAdvice"/>
+		<property name="pointcut" ref="tracePointcut"/>
+	</bean>
+
+</beans>

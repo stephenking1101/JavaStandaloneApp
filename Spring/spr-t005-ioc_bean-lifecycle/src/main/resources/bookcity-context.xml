@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+	"http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+
+
+<beans>
+
+	<bean class="com.golearning.training.spr.lesson.iocextend.BookCityBeanFactoryPostProcesser"/>
+
+	<bean id="bookDao" class="com.golearning.training.spr.lesson.dao.impl.hibernate.BookDAOHibernateImpl"/>
+
+	<bean id="bookSrv" class="com.golearning.training.spr.lesson.business.BookSrv" init-method="xInit" destroy-method="xDestroy" lazy-init="true">
+		<property name="bookDao"><ref bean="bookDao"/></property>
+	</bean>
+	
+	<bean id="non-bookSrv" class="com.golearning.training.spr.lesson.business.NonPOJOSrv" init-method="yInit" destroy-method="yDestroy">
+		<property name="bookDao"><ref bean="bookDao"/></property>
+	</bean>
+	
+
+</beans>

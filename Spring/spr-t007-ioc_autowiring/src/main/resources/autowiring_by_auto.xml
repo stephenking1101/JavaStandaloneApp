@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+	"http://www.springframework.org/dtd/spring-beans.dtd">
+
+
+<beans>
+
+	<bean id="bookDao" class="com.golearning.training.spr.lesson.dao.impl.hibernate.BookDAOHibernateImpl"/>
+
+	<bean id="bookSrv" class="com.golearning.training.spr.lesson.business.BookSrv" autowire="autodetect">
+		<property name="count" value="18"/>
+	</bean>
+	
+	<bean id="constructorBookSrv" class="com.golearning.training.spr.lesson.business.ConstructorSrv" autowire="autodetect">
+		<constructor-arg value="18" index="1"/>
+	</bean>
+
+</beans>
