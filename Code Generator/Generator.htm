@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<title>Code Generator</title>
+<script language="JavaScript" src="common.js"></script>
+<script language="JavaScript" src="generator.js"></script>
+</head>
+
+<body onLoad="initScreen();" style="font-family: Arial, Helvetica, sans-serif;font-size: 12px;">
+<form name="form1" method="post" action="">
+	<table>
+		<tr>
+			<td>
+        		<label>Input Format:</label>
+	  		</td>
+	  		<td>
+				<select id="input_format" onChange="onChangeInputFormat();">
+					<option value="dyna_form_design">DynaForm Design</option>
+					<option value="table_design">Table Design</option>
+					<option value="service_local">Service Local Interface</option>
+				</select>
+			</td>
+			<td width="90" align="right">
+        		<label>Generate:&nbsp;</label>
+  		  </td>
+	  		<td>
+				<select id="generate_type" onChange="onChangeGenerateType();" style="width:200px">
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+        		<label>Created by:</label>
+	  		</td>
+	  		<td><input type="text" id="author_name">
+			</td>
+			<td width="90" align="right">
+        		<label id="lbl_output_path">Output Path:&nbsp;</label>
+  		  </td>
+	  		<td>
+				<input type="text" id="output_path">
+			</td>
+		</tr>
+		<tr>
+			<td>
+        		<label id="lbl_class_name">Name:</label>
+	  		</td>
+	  		<td><input type="text" id="class_name">
+			</td>
+			<td width="90" align="right">
+        		<label id="lbl_alias_name">Alias Name:&nbsp;</label>
+  		  </td>
+	  		<td><input type="text" id="alias_name">
+			</td>
+		</tr>
+		<tr>
+			<td>
+        		<label id="lbl_package_name">Package:</label>
+	  		</td>
+	  		<td colspan="3"><input type="text" id="package_name" style="width:431px">
+			</td>
+		</tr>
+  </table>
+	<table>
+		<tr>
+		  <td>
+                <label>Input:</label>
+		  </td>
+			<td>
+			</td>
+			<td>
+                <label>Output:</label>
+			</td>
+		</tr>
+		<tr>
+		  <td>
+                <textarea id="input_text" cols="30" rows="25" wrap="off"></textarea>
+		  </td>
+			<td>
+			</td>
+			<td>
+                <textarea id="output_text" cols="100" rows="25" wrap="off"></textarea>
+			</td>
+		</tr>
+	</table>
+	
+    <input type="button" name="generate" value="Generate" onClick="generateCode();">
+</form>
+</body>
+</html>
