@@ -186,7 +186,7 @@ package  sinosoft.dj.aop.staticaop;
 ```
 
 上面代码,可以说是AOP最简单的实现!
-但是我们会发现一个问题,如果我们像Hello这样的类很多,那么,我们是不是要去写很多个HelloProxy这样的类呢.没错,是的.其实也是一种很麻烦的事.在jdk1.3以后.jdk跟我们提供了一个API   java.lang.reflect.InvocationHandler的类. 这个类可以让我们在JVM调用某个类的方法时动态的为些方法做些什么事.让我们把以上的代码改一下来看看效果.
+但是我们会发现一个问题,如果我们像Hello这样的类很多,那么,我们是不是要去写很多个HelloProxy这样的类呢.没错,是的.其实也是一种很麻烦的事.在jdk1.3以后.jdk跟我们提供了一个API   java.lang.reflect.InvocationHandler的类**(动态代理)**. 这个类可以让我们在JVM调用某个类的方法时动态的为些方法做些什么事.让我们把以上的代码改一下来看看效果.
 同样,我们写一个IHello的接口和一个Hello的实现类.在接口中.我们定义两个方法;代码如下 :
 
 IHello.java  
