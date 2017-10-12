@@ -20,12 +20,12 @@ IoC的3种依赖注入类型如下。
     
 	使用XmlBeanFactory你可以像下面这样定义你的bean class。
 
-```
-<bean id="exampleBean"
-      class="examples.ExampleBean"/>
-<bean name="anotherExample"
-      class="examples.ExampleBeanTwo"/>
-```
+    ```
+    <bean id="exampleBean"
+          class="examples.ExampleBean"/>
+    <bean name="anotherExample"
+          class="examples.ExampleBeanTwo"/>
+    ```
 
     至于为构造函数提供（可选的）参数，以及对象实例创建后设置实例属性，将会在后面叙述。
 	
@@ -35,11 +35,11 @@ IoC的3种依赖注入类型如下。
 
     下面是一个bean定义的例子，声明这个bean要通过factory-method指定的方法创建。注意，这个bean定义并没有指定返回对象的类型，只指定包含工厂方法的类。在这个例子中，createInstance 必须是static方法。
 
-```
-<bean id="exampleBean"
+    ```
+    <bean id="exampleBean"
       class="examples.ExampleBean2"
       factory-method="createInstance"/>
-```
+    ```
 
     至于为工厂方法提供（可选的）参数，以及对象实例被工厂方法创建后设置实例属性，将会在后面叙述。
 	
@@ -50,20 +50,20 @@ IoC的3种依赖注入类型如下。
     使用这种机制，class属性必须为空，而且factory-bean属性必须指定一个bean的名字，这个bean一定要在当前的bean工厂或者父bean工厂中，并包含工厂方法。而工厂方法本身仍然要通过factory-method属性设置。
 	
     下面是一个例子。
-```
-<!-- The factory bean, which contains a method called
-     createInstance -->
-<bean id="myFactoryBean"
-      class="...">
-  ...
-</bean>
-<!-- The bean to be created via the factory bean -->
-<bean id="exampleBean"
-      factory-bean="myFactoryBean"
-      factory-method="createInstance"/>
-```
+    ```
+    <!-- The factory bean, which contains a method called
+         createInstance -->
+    <bean id="myFactoryBean"
+          class="...">
+      ...
+    </bean>
+    <!-- The bean to be created via the factory bean -->
+    <bean id="exampleBean"
+          factory-bean="myFactoryBean"
+          factory-method="createInstance"/>
+    ```
 
-虽然我们要在后面讨论设置bean的属性，但是，这个方法意味着工厂bean本身能够被容器通过依赖注射来管理和配置。
+    虽然我们要在后面讨论设置bean的属性，但是，这个方法意味着工厂bean本身能够被容器通过依赖注射来管理和配置。
 
 
 # AOP（面向切面编程）原理
@@ -191,7 +191,9 @@ package  sinosoft.dj.aop.staticaop;
 ```
 
 上面代码,可以说是AOP最简单的实现!
-但是我们会发现一个问题,如果我们像Hello这样的类很多,那么,我们是不是要去写很多个HelloProxy这样的类呢.没错,是的.其实也是一种很麻烦的事.在jdk1.3以后.jdk跟我们提供了一个API   java.lang.reflect.InvocationHandler的类**(动态代理)**. 这个类可以让我们在JVM调用某个类的方法时动态的为些方法做些什么事.让我们把以上的代码改一下来看看效果.
+
+但是我们会发现一个问题,如果我们像Hello这样的类很多,那么,我们是不是要去写很多个HelloProxy这样的类呢.没错,是的.其实也是一种很麻烦的事.在jdk1.3以后.jdk跟我们提供了一个API **java.lang.reflect.InvocationHandler的类(动态代理)**. 这个类可以让我们在JVM调用某个类的方法时动态的为些方法做些什么事.让我们把以上的代码改一下来看看效果.
+
 同样,我们写一个IHello的接口和一个Hello的实现类.在接口中.我们定义两个方法;代码如下 :
 
 IHello.java  
