@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+        http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.1.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+        http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd"
+       default-lazy-init="true">
+    <context:annotation-config />
+
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:database.properties</value>
+            </list>
+        </property>
+    </bean>
+    
+    <!--Service-->
+    <bean id="helloWorldService" class="example.service.impl.HelloWorldServiceImpl" />
+
+    <!--business-->
+    <bean id="helloWorldManager" class="example.business.HelloWorldManager" />
+
+    <!--provider-->
+    <bean id="helloWorldConsumer" class="example.provider.HelloWorldConsumer" lazy-init="false"/>
+    <bean id="helloWorldProducer" class="example.provider.HelloWorldProducer" />
+
+    <!--DAO-->
+    <bean id="helloWorldDao" class="example.dao.cass.CassHelloWorldDao">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <bean id="sessionFactory" class="example.store.cassandra.SessionFactoryImpl" init-method="init"
+          destroy-method="destroy">
+        <property name="contactPointsWithPorts" value="${helloworld.service.cassandra.contactPointsWithPorts}" />
+        <property name="localDc" value="${helloworld.service.cassandra.localDc}" />
+        <property name="keySpace" value="${helloworld.service.cassandra.keySpace}" />
+        <property name="username" value="${helloworld.service.cassandra.username}" />
+        <property name="password" value="${helloworld.service.cassandra.password}" />
+        <property name="sslEnabled" value="${helloworld.service.cassandra.ssl.enabled}" />
+        <property name="trustStorePath" value="${helloworld.service.cassandra.truststore}" />
+        <property name="trustStorePassword" value="${helloworld.service.cassandra.truststore.pw}" />
+        <property name="keyStorePath" value="${helloworld.service.cassandra.keystore}" />
+        <property name="keyStorePassword" value="${helloworld.service.cassandra.keystore.pw}" />
+    </bean>
+
+</beans>

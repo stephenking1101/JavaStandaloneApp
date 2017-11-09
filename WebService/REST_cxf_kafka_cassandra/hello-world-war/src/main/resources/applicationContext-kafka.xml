@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+        http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.1.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+        http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd"
+       default-lazy-init="true">
+
+    <!-- producer -->
+    <bean id="kafkaProducerProperties" class="java.util.HashMap">
+        <constructor-arg>
+            <map>
+                <entry key="bootstrap.servers" value="${iam.rba.kafka.bootstrap.servers}"/>
+                <entry key="key.serializer" value="org.apache.kafka.common.serialization.StringSerializer"/>
+                <entry key="value.serializer" value="org.springframework.kafka.support.serializer.JsonSerializer"/>
+            </map>
+        </constructor-arg>
+    </bean>
+
+    <bean id="kafkaProducerFactory" class="org.springframework.kafka.core.DefaultKafkaProducerFactory">
+        <constructor-arg name="configs" ref="kafkaProducerProperties"/>
+    </bean>
+
+    <bean id="kafkaTemplate" class="org.springframework.kafka.core.KafkaTemplate">
+        <constructor-arg name="producerFactory" ref="kafkaProducerFactory"/>
+    </bean>
+
+    <!-- consumer -->
+    <bean id="kafkaConsumerProperties" class="java.util.HashMap">
+        <constructor-arg>
+            <map>
+                <entry key="bootstrap.servers" value="${iam.rba.kafka.bootstrap.servers}"/>
+                <entry key="key.deserializer" value="org.apache.kafka.common.serialization.StringDeserializer"/>
+                <entry key="value.deserializer" value="org.apache.kafka.common.serialization.StringDeserializer"/>
+                <entry key="group.id" value="hello-world-group"/>
+                <entry key="enable.auto.commit" value="false"/>
+                <entry key="isolation.level" value="read_committed"/>
+            </map>
+        </constructor-arg>
+    </bean>
+
+    <bean id="kafkaConsumerFactory" class="org.springframework.kafka.core.DefaultKafkaConsumerFactory">
+        <constructor-arg name="configs" ref="kafkaConsumerProperties"/>
+    </bean>
+
+    <bean id="jsonMessageConverter" class="org.springframework.kafka.support.converter.StringJsonMessageConverter"></bean>
+
+    <bean id="kafkaListenerContainerFactory" class="org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory">
+        <property name="consumerFactory" ref="kafkaConsumerFactory"/>
+        <property name="messageConverter" ref="jsonMessageConverter"/>
+    </bean>
+    
+    <bean id="manualCommit" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">    
+        <property name="staticField" value="org.springframework.kafka.listener.AbstractMessageListenerContainer.AckMode.MANUAL" />    
+    </bean>  
+    
+    <bean id="containerProperties" factory-bean="kafkaListenerContainerFactory" factory-method="getContainerProperties">
+        <property name="ackMode" ref="manualCommit"/>
+    </bean>
+
+    <bean class="org.springframework.kafka.annotation.KafkaListenerAnnotationBeanPostProcessor">
+        <property name="endpointRegistry" ref="endpointRegistry"></property>
+        <property name="containerFactoryBeanName" ref="kafkaListenerContainerFactory"/>
+    </bean>
+
+    <bean name="endpointRegistry" class="org.springframework.kafka.config.KafkaListenerEndpointRegistry"></bean>
+</beans>
