@@ -1,25 +1,21 @@
 package example.service.impl;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.springframework.kafka.test.hamcrest.KafkaMatchers.hasKey;
-import static org.springframework.kafka.test.hamcrest.KafkaMatchers.hasPartition;
-import static org.springframework.kafka.test.hamcrest.KafkaMatchers.hasValue;
-
-import java.util.Map;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.kafka.test.assertj.KafkaConditions.key;
+import static org.springframework.kafka.test.assertj.KafkaConditions.value;
 
 import javax.ws.rs.core.Response;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.AfterClass;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Maps;
-import com.google.common.net.HttpHeaders;
 import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.http.ContentType;
 
 import example.constants.HelloWorldConstants;
 import example.service.payload.HelloWorld;
@@ -44,16 +40,18 @@ public class HelloWorldServiceCT extends AbstractComponentTest {
     @Before
     public void before() {
         initRequestParams();
+        kafkaHelper.clear();
     }
 
-    @Before
-    public void after() {
+    @AfterClass
+    public static void after() {
         kafkaHelper.clear();
+        kafkaHelper.after();
     }
 
     private void initRequestParams() {
     	helloWorld = new HelloWorld();
-    	helloWorld.setUserName("abc");
+    	helloWorld.setUserName(uid);
         helloWorld.setTimestamp(System.currentTimeMillis());
 
         helloWorld.setExtension("v_int", 123);
@@ -66,7 +64,7 @@ public class HelloWorldServiceCT extends AbstractComponentTest {
         String countCql = "select count(1) from hello_world where user_name='" + uid + "'";
         Long countBefore = EmbeddedCassandraHelper.queryForCount(countCql);
 
-        RestAssured.given().log().all().body(objectMapper.writeValueAsString(helloWorld))
+        RestAssured.given().log().all().contentType(ContentType.JSON).body(objectMapper.writeValueAsString(helloWorld))
                 .when().post(HelloWorldTestConstants.URL_HELLOWORLD)
                 .then().log().all().assertThat()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
@@ -86,12 +84,24 @@ public class HelloWorldServiceCT extends AbstractComponentTest {
 
     @Test
     public void testProducerFlow() throws Exception {
-        RestAssured.given().log().all().body(objectMapper.writeValueAsString(helloWorld))
+        RestAssured.given().log().all().contentType(ContentType.JSON).body(objectMapper.writeValueAsString(helloWorld))
                 .when().post(HelloWorldTestConstants.URL_HELLOWORLD)
                 .then().log().all().assertThat()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
         ConsumerRecord<String, String> received = (ConsumerRecord<String, String>) kafkaHelper.receive();
         assertEquals(uid, received.key());
+    }
+    
+    @Test
+    public void testEmbeddedKafka() throws Exception{
+        kafkaHelper.send("key", helloWorld);
+        //use objectMapper to serialize any Java value as a String
+        assertThat((ConsumerRecord<String, String>) kafkaHelper.receive()).has(value(objectMapper.writeValueAsString(helloWorld)));
+        
+        kafkaHelper.send("2", helloWorld);
+        ConsumerRecord<String, String> received = (ConsumerRecord<String, String>) kafkaHelper.receive();
+        assertThat(received).has(key("2"));
+        assertThat(received).has(value(objectMapper.writeValueAsString(helloWorld)));
     }
 }

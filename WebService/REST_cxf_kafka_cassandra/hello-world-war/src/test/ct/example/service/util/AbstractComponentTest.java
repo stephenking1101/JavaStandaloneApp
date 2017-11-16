@@ -1,20 +1,12 @@
 package example.service.util;
 
-import static org.junit.Assert.fail;
-
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.eclipse.jetty.server.Server;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.mockito.Matchers;
-import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.kafka.test.rule.KafkaEmbedded;
 
 import com.jayway.restassured.RestAssured;
 

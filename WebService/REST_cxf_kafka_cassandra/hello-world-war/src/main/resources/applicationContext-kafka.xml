@@ -16,7 +16,7 @@
     <bean id="kafkaProducerProperties" class="java.util.HashMap">
         <constructor-arg>
             <map>
-                <entry key="bootstrap.servers" value="${iam.rba.kafka.bootstrap.servers}"/>
+                <entry key="bootstrap.servers" value="${spring.embedded.kafka.brokers}"/>
                 <entry key="key.serializer" value="org.apache.kafka.common.serialization.StringSerializer"/>
                 <entry key="value.serializer" value="org.springframework.kafka.support.serializer.JsonSerializer"/>
             </map>
@@ -35,7 +35,7 @@
     <bean id="kafkaConsumerProperties" class="java.util.HashMap">
         <constructor-arg>
             <map>
-                <entry key="bootstrap.servers" value="${iam.rba.kafka.bootstrap.servers}"/>
+                <entry key="bootstrap.servers" value="${spring.embedded.kafka.brokers}"/>
                 <entry key="key.deserializer" value="org.apache.kafka.common.serialization.StringDeserializer"/>
                 <entry key="value.deserializer" value="org.apache.kafka.common.serialization.StringDeserializer"/>
                 <entry key="group.id" value="hello-world-group"/>
@@ -66,7 +66,6 @@
 
     <bean class="org.springframework.kafka.annotation.KafkaListenerAnnotationBeanPostProcessor">
         <property name="endpointRegistry" ref="endpointRegistry"></property>
-        <property name="containerFactoryBeanName" ref="kafkaListenerContainerFactory"/>
     </bean>
 
     <bean name="endpointRegistry" class="org.springframework.kafka.config.KafkaListenerEndpointRegistry"></bean>

@@ -13,6 +13,7 @@ public class JettyFactory {
         connector.setPort(port);
         connector.setReuseAddress(true);
         jettyServer.setConnectors(new Connector[] { connector });
+        //load web.xml
         jettyServer.setHandler(new WebAppContext(webApp, contextPath));
         jettyServer.setStopAtShutdown(true);
         return jettyServer;

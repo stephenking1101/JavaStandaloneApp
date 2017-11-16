@@ -28,6 +28,20 @@
             <groupId>com.example</groupId>
             <artifactId>hello-world-store</artifactId>
         </dependency>
+        <!-- logging starts -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <!-- logging ends -->
 
         <!-- Test -->
         <dependency>

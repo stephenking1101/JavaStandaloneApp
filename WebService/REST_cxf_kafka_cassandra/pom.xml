@@ -11,8 +11,6 @@
 		
 	<properties>
 			<jdk.version>1.8</jdk.version>
-			<spring.version>4.1.1.RELEASE</spring.version>
-			<junit.version>3.8.1</junit.version>
 			<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  
 	</properties>
 	  

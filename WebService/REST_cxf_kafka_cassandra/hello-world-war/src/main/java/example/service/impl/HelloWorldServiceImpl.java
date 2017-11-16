@@ -10,7 +10,7 @@ import example.service.payload.HelloWorld;
 
 public class HelloWorldServiceImpl implements HelloWorldService{
 	
-	private static Logger logger = LoggerFactory.getLogger(HelloWorldServiceImpl.class);
+	private static Logger logger = LoggerFactory.getLogger(HelloWorldServiceImplTest.class);
 
 	private HelloWorldManager helloWorldManager;
 	

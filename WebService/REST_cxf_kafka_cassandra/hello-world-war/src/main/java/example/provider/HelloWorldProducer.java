@@ -12,7 +12,7 @@ public class HelloWorldProducer {
 
 	private static Logger logger = LoggerFactory.getLogger(HelloWorldProducer.class);
 	
-	private KafkaTemplate kafkaTemplate;
+	private KafkaTemplate<String, HelloWorld> kafkaTemplate;
 
 	public void send(HelloWorld helloWorld){
         logger.debug("send to kafka{}", helloWorld);
@@ -20,7 +20,7 @@ public class HelloWorldProducer {
     }
 	
 	@Autowired
-    public void setKafkaTemplate(KafkaTemplate kafkaTemplate) {
+    public void setKafkaTemplate(KafkaTemplate<String, HelloWorld> kafkaTemplate) {
 		this.kafkaTemplate = kafkaTemplate;
 	}
 }

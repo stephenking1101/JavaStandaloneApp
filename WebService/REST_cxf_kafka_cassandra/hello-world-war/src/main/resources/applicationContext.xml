@@ -19,6 +19,11 @@
                 <value>classpath:database.properties</value>
             </list>
         </property>
+        <property name="properties">
+	        <props>
+	            <prop key="spring.embedded.kafka.brokers">127.0.0.1:9092</prop>
+	        </props>
+	    </property>
     </bean>
     
     <!--Service-->
