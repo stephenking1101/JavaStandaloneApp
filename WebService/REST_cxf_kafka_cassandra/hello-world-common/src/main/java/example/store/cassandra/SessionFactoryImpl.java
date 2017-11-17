@@ -52,6 +52,7 @@ public class SessionFactoryImpl implements SessionFactory {
             clusterBuilder.withSSL();
         }
 
+        //cluster holds the known state of the actual Cassandra cluster (notably the Metadata). This class is thread-safe and should be reused
         this.cluster = clusterBuilder.build();
         this.logger.info(" Session Factory init finish !");
     }
@@ -127,6 +128,7 @@ public class SessionFactoryImpl implements SessionFactory {
         if (this.session == null) {
             synchronized(this) {
                 if (this.session == null) {
+                	//the Session is what you use to execute queries. Likewise, it is thread-safe and should be reused
                     this.session = this.cluster.connect(this.keySpace);
                 }
             }

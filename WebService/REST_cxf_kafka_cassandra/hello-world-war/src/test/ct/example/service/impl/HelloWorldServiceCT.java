@@ -46,7 +46,7 @@ public class HelloWorldServiceCT extends AbstractComponentTest {
     @AfterClass
     public static void after() {
         kafkaHelper.clear();
-        kafkaHelper.after();
+        //kafkaHelper.after();
     }
 
     private void initRequestParams() {

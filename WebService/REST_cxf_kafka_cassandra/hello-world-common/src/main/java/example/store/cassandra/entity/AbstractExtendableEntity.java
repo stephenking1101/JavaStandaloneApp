@@ -13,6 +13,7 @@ import example.store.cassandra.exception.StoreCassandraException;
 public abstract class AbstractExtendableEntity {
 	private static ObjectMapper objectMapper = new ObjectMapper();
 
+	//The class must provide a default constructor. The default constructor is allowed to be non-public, provided that the security manager, if any, grants the mapper access to it via reflection.
     public AbstractExtendableEntity() {
     }
 

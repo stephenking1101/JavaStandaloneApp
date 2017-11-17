@@ -30,6 +30,7 @@ public class EmbeddedCassandraHelper {
 
     public static synchronized void startEmbeddedCassandraAndLoadData() throws Exception {
         if (!isInit) {
+        	//embedded Cassandra server starts on 127.0.0.1, ports 9171 (Thrift) and 9142 (Native)
             EmbeddedCassandraServerHelper.startEmbeddedCassandra(30000);
             initSession(1);
             loadData(1, false);
@@ -39,7 +40,9 @@ public class EmbeddedCassandraHelper {
 
     private static void initSession(final int currentTryTimes) throws Exception {
         try {
+        	//cluster holds the known state of the actual Cassandra cluster (notably the Metadata). This class is thread-safe and should be reused
             cluster = new Cluster.Builder().addContactPoints(hostIp).withPort(port).build();
+            //the Session is what you use to execute queries. Likewise, it is thread-safe and should be reused
             session = cluster.connect();
             dataLoader = new CQLDataLoader(session);
         } catch (NoHostAvailableException e) {
@@ -100,4 +103,8 @@ public class EmbeddedCassandraHelper {
         }
     }
 
+    public static void stopEmbeddedCassandra() {
+    	EmbeddedCassandraServerHelper.stopEmbeddedCassandra();
+    	
+    }
 }

@@ -9,6 +9,7 @@ import com.datastax.driver.mapping.annotations.QueryParameters;
 
 import example.dao.cass.entity.HelloWorldEntity;
 
+//Accessors provide a way to map custom queries not supported by the default entity mappers.
 @Accessor
 public interface HelloWorldAccessor {
     @QueryParameters(consistency = "LOCAL_QUORUM")

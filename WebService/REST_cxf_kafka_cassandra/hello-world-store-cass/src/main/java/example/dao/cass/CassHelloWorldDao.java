@@ -27,6 +27,7 @@ public class CassHelloWorldDao extends CassandraObjectMapper<HelloWorldEntity> i
 
     @Override
     public List<HelloWorld> queryByUserName(String userName) {
+    	//Like mappers, accessors are cached at the manager level and thus, are thread-safe/sharable
         final HelloWorldAccessor accessor = super.getAccessor(HelloWorldAccessor.class);
         final List<HelloWorld> pojoList = new ArrayList<HelloWorld>();
 
