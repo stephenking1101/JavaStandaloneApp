@@ -27,20 +27,20 @@
                 <module>hello-world-store</module>
                 <module>hello-world-store-cass</module>
                 <module>hello-world-war</module>
-                <module>hello-world-bundle</module>
+                <module>hello-world-client</module>
             </modules>
         </profile>
         <profile>
             <id>component-test</id>
             <modules>
                 <module>hello-world-war</module>
+                <module>hello-world-client</module>
             </modules>
         </profile>
         <profile>
             <id>package</id>
             <modules>
-                <module>hello-world-bundle</module>
-                <module>hello-world-rpm</module>
+                <module>hello-world-docker</module>
             </modules>
         </profile>
     </profiles>

@@ -4,6 +4,7 @@ public class AppException extends RuntimeException {
     private static final long serialVersionUID = -7149381622680049317L;
 
     public AppException() {
+    	super();
     }
 
     public AppException(String message) {

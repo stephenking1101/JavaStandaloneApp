@@ -1,17 +1,5 @@
 package example.store.cassandra;
 
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +10,6 @@ import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.querybuilder.Insert;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
-import com.datastax.driver.core.querybuilder.Select.Where;
 import com.datastax.driver.mapping.Mapper;
 import com.datastax.driver.mapping.Result;
 import com.datastax.driver.mapping.annotations.ClusteringColumn;
@@ -43,6 +30,17 @@ import example.store.cassandra.annotation.IndexColumn;
 import example.store.cassandra.exception.StoreCassandraException;
 import example.store.cassandra.util.CassandraUtil;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+
 
 /**
 * 泛型类
@@ -53,140 +51,162 @@ import example.store.cassandra.util.CassandraUtil;
 */
 public class CassandraObjectMapper<T> extends CassandraTemplate {
 
-	private Logger logger;
+    private Logger logger = LoggerFactory.getLogger(CassandraObjectMapper.class);
     private Mapper<T> mapper;
     private Class<T> clazz;
+
     protected String tableName;
+    // can be set in runtime
     private ConsistencyLevel readConsistency;
     private ConsistencyLevel writeConsistency;
+    //store the getter method of the column
     private Map<String, Method> columnGetterMap;
     private List<String> primaryKeyColumns;
-    private Map<String, CassandraObjectMapper<T>.IndexColumnInfo> indexNameMap;
+    //store the field name and the column name, key is field name in clazz, value is the column name in the table
+    private Map<String, IndexColumnInfo> indexNameMap;
+
+    //ExecutorService to execute cassandra commands asynchronous
     private ListeningExecutorService listeningService;
-    final Function<Object, Object> NOOP;
-    final Function<ResultSet, T> mapOneFunction;
-    final Function<ResultSet, Result<T>> mapAllFunction;
 
-    public CassandraObjectMapper(Class<T> clazz) {
-        this(clazz, (SessionFactoryImpl)null);
-    }
+    final Function<Object, Void> NOOP = Functions.<Void> constant(null);
 
-    public CassandraObjectMapper(Class<T> clazz, SessionFactoryImpl sessionFactory) {
-        this.logger = LoggerFactory.getLogger(CassandraObjectMapper.class);
-        this.NOOP = Functions.constant((Object)null);
-        this.mapOneFunction = new Function<ResultSet, T>() {
-            public T apply(ResultSet rs) {
-            	/*Mapper#map provides a way to convert the results of a regular query:
+    final Function<ResultSet, T> mapOneFunction = new Function<ResultSet, T>() {
+        @Override
+        public T apply(ResultSet rs) {
+			/*Mapper#map provides a way to convert the results of a regular query:
             	 *This method will ignore:
                  *  extra columns in the ResultSet that are not mapped for this entity.
             	 *  mapped fields that are not present in the ResultSet (setters won’t be called so the value will be the one after invocation of the class’s default constructor).*/
-                return CassandraObjectMapper.this.getMapper().map(rs).one();
-            }
-        };
-        this.mapAllFunction = new Function<ResultSet, Result<T>>() {
-        	//Mapper#map returns a Result
+            return CassandraObjectMapper.this.getMapper().map(rs).one();
+        }
+    };
+    final Function<ResultSet, Result<T>> mapAllFunction = new Function<ResultSet, Result<T>>() {
+        @Override
+        public Result<T> apply(ResultSet rs) {
+			//Mapper#map returns a Result
         	//Result is similar to ResultSet but for a given mapped class. It provides methods one(), all(), iterator(), getExecutionInfo() and isExhausted(). Note that iterating the Result will consume the ResultSet, and vice-versa.
-            public Result<T> apply(ResultSet rs) {
-                return CassandraObjectMapper.this.getMapper().map(rs);
-            }
-        };
+            return CassandraObjectMapper.this.getMapper().map(rs);
+        }
+    };
+
+
+
+
+
+    public CassandraObjectMapper(Class<T> clazz) {
+        this(clazz, null);
+    }
+
+    public CassandraObjectMapper(Class<T> clazz, SessionFactoryImpl sessionFactory) {
         this.clazz = clazz;
         super.setSessionFactory(sessionFactory);
-        this.validTableAnnotation();
-        this.init();
+        validTableAnnotation();
+        init();
     }
 
     private void init() {
-        this.logger.debug("init object mapper");
-        this.columnGetterMap = Maps.newHashMap();
-        this.primaryKeyColumns = Lists.newArrayList();
-        this.indexNameMap = Maps.newHashMap();
-        Field[] declaredFields = this.clazz.getDeclaredFields();
-        Field[] arr$ = declaredFields;
-        int len$ = declaredFields.length;
+        //init primary column and index column
+        logger.debug("init object mapper");
+        columnGetterMap = Maps.newHashMap();
+        primaryKeyColumns = Lists.newArrayList();
+        indexNameMap = Maps.newHashMap();
 
-        for(int i$ = 0; i$ < len$; ++i$) {
-            Field field = arr$[i$];
+        Field[] declaredFields = clazz.getDeclaredFields();
+        for (Field field : declaredFields) {
+
             String columnName = field.getName();
             if (field.isAnnotationPresent(Column.class)) {
-                columnName = ((Column)field.getAnnotation(Column.class)).name();
+                columnName = field.getAnnotation(Column.class).name();
             }
-
             if (field.isAnnotationPresent(IndexColumn.class)) {
-                this.columnGetterMap.put(columnName, this.getReadMethod(field));
+                columnGetterMap.put(columnName, getReadMethod(field));
                 boolean isPrimaryKey = false;
                 if (field.isAnnotationPresent(ClusteringColumn.class)) {
                     isPrimaryKey = true;
                 }
-
-                this.indexNameMap.put(field.getName(), new CassandraObjectMapper.IndexColumnInfo(field.getName(), columnName, isPrimaryKey));
-                this.logger.debug("get an index column: {}", columnName);
+                indexNameMap.put(field.getName(), new IndexColumnInfo(field.getName(), columnName, isPrimaryKey));
+                logger.debug("get an index column: {}", columnName);
             }
-
             if (field.isAnnotationPresent(PartitionKey.class) || field.isAnnotationPresent(ClusteringColumn.class)) {
-                this.columnGetterMap.put(columnName, this.getReadMethod(field));
-                this.primaryKeyColumns.add(columnName);
-                this.logger.debug("get a primary key column: {}", columnName);
+                columnGetterMap.put(columnName, getReadMethod(field));
+                primaryKeyColumns.add(columnName);
+                logger.debug("get a primary key column: {}", columnName);
             }
+
         }
 
-        this.listeningService = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool());
+        listeningService = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool());
     }
 
     public void destory() {
-        this.logger.debug("destory CassandraObjectMapper");
-        CassandraUtil.destoryThreadPool(this.listeningService);
+        logger.debug("destory CassandraObjectMapper");
+        CassandraUtil.destoryThreadPool(listeningService);
     }
 
+
+    /*
+     * ===========================================
+     *
+     * save methods: save/saveWithIndex/saveAsync
+     *
+     * ===========================================
+     */
+
+    /**
+     * save entity
+     *
+     * @param entity
+     */
     public void save(T entity) {
-    	//Mapper.saveQuery(entity): returns a statement generated by the mapper to save entity into the database
+		//Mapper.saveQuery(entity): returns a statement generated by the mapper to save entity into the database
     	//This gives the client a chance to customize the statement before executing it
-        Statement saveQuery = this.getSaveQuery(entity);
+        Statement saveQuery = getSaveQuery(entity);
         this.getSession().execute(saveQuery);
     }
 
+    /**
+     * save the entity and index table at the same time the table name
+     * should be <main_table_name>_by_<index_column>
+     *
+     * @param entity
+     */
     public void saveWithIndex(T entity) {
+        //use batch statement to save entity and its indexes in transaction
         BatchStatement batch = new BatchStatement();
-        List<Statement> statements = this.getSaveWithIndexStatements(entity);
-        Iterator i$ = statements.iterator();
 
-        while(i$.hasNext()) {
-            Statement statement = (Statement)i$.next();
+        //save the entity
+        List<Statement> statements = getSaveWithIndexStatements(entity);
+        for (Statement statement : statements) {
             batch.add(statement);
         }
-
         if (this.getWriteConsistency() != null) {
             batch.setConsistencyLevel(this.getWriteConsistency());
         }
-
         this.getSession().execute(batch);
     }
 
     public List<Statement> getSaveWithIndexStatements(T entity) {
         List<Statement> result = Lists.newArrayList();
         result.add(this.getMapper().saveQuery(entity));
-        List<Object> primaryKeyValues = this.getPrimaryKeyValues(entity);
-        Iterator i$ = this.indexNameMap.values().iterator();
-
-        while(i$.hasNext()) {
-            CassandraObjectMapper<T>.IndexColumnInfo index = (CassandraObjectMapper.IndexColumnInfo)i$.next();
-            List<String> columnKeys = Lists.newArrayList(this.primaryKeyColumns);
+        List<Object> primaryKeyValues = getPrimaryKeyValues(entity);
+        //add all index
+        for (IndexColumnInfo index : indexNameMap.values()) {
+            List<String> columnKeys = Lists.newArrayList(primaryKeyColumns);
             List<Object> columnValues = Lists.newArrayList(primaryKeyValues);
             if (!index.isPrimaryKey()) {
                 columnKeys.add(index.getColumnName());
-                columnValues.add(this.getColumnValue(entity, (Method)this.columnGetterMap.get(index.getColumnName())));
+                columnValues.add(getColumnValue(entity, columnGetterMap.get(index.getColumnName())));
             }
-
-            Insert insertIndexStatement = QueryBuilder.insertInto(this.getIndexTableName(index.getColumnName())).values((String[])columnKeys.toArray(new String[0]), columnValues.toArray());
+            Insert insertIndexStatement = QueryBuilder.insertInto(getIndexTableName(index.getColumnName()))
+                    .values(columnKeys.toArray(new String[0]), columnValues.toArray());
             result.add(insertIndexStatement);
         }
-
         return result;
     }
 
-    public ListenableFuture<Object> saveAsync(T entity) {
-        Statement saveQuery = this.getSaveQuery(entity);
-        return Futures.transform(this.getSession().executeAsync(saveQuery), this.NOOP);
+    public ListenableFuture<Void> saveAsync(T entity) {
+        Statement saveQuery = getSaveQuery(entity);
+        return Futures.transform(this.getSession().executeAsync(saveQuery), NOOP);
     }
 
     public Statement getSaveQuery(T entity) {
@@ -194,67 +214,85 @@ public class CassandraObjectMapper<T> extends CassandraTemplate {
         if (this.getWriteConsistency() != null) {
             saveQuery.setConsistencyLevel(this.getWriteConsistency());
         }
-
         return saveQuery;
     }
 
+    /*
+     * ===========================================
+     *
+     * get methods: get/getByIndex/getByIndexAync
+     *
+     * ===========================================
+     */
+
     public T get(Object... primaryKey) {
-    	//Mapper.getQuery(primaryKey): returns a statement to select a row in the database, selected on the given primaryKey, and matching the mapped object structure.
-        Statement getQuery = this.getGetQuery(primaryKey);
+        //Mapper.getQuery(primaryKey): returns a statement to select a row in the database, selected on the given primaryKey, and matching the mapped object structure.
+        Statement getQuery = getGetQuery(primaryKey);
         return this.getMapper().map(this.getSession().execute(getQuery)).one();
+
     }
 
     public ListenableFuture<T> getAsync(Object... primaryKey) {
-        this.logger.debug("Async get by primary keys's values:{}", Arrays.toString(primaryKey));
-        Statement getQuery = this.getGetQuery(primaryKey);
-        return Futures.transform(this.getSession().executeAsync(getQuery), this.mapOneFunction);
+        logger.debug("Async get by primary keys's values:{}", Arrays.toString(primaryKey));
+        Statement getQuery = getGetQuery(primaryKey);
+        return Futures.transform((this.getSession().executeAsync(getQuery)), mapOneFunction);
+
     }
 
     public List<T> getByIndex(String indexField, Object indexValue) {
         List<T> result = Lists.newArrayList();
-        CassandraObjectMapper<T>.IndexColumnInfo indexColumn = (CassandraObjectMapper.IndexColumnInfo)this.indexNameMap.get(indexField);
+
+        IndexColumnInfo indexColumn = indexNameMap.get(indexField);
         if (indexColumn == null) {
             throw new IllegalArgumentException(indexField + " is not an index field");
-        } else {
-            List<ListenableFuture<T>> futureList = Lists.newArrayList();
-            Where select = QueryBuilder.select().all().from(this.getIndexTableName(indexColumn.getColumnName())).where(QueryBuilder.eq(indexColumn.getColumnName(), indexValue));
-            if (this.getReadConsistency() != null) {
-                select.setConsistencyLevel(this.getReadConsistency());
-            }
-
-            Iterator i$ = this.getSession().execute(select).iterator();
-
-            while(i$.hasNext()) {
-                Row row = (Row)i$.next();
-                futureList.add(this.getAsync(this.getPrimaryKeyValues(row)));
-            }
-
-            i$ = futureList.iterator();
-
-            while(i$.hasNext()) {
-                ListenableFuture future = (ListenableFuture)i$.next();
-
-                try {
-                    T entity = (T) future.get();
-                    if (this.isIndexValueMatchValueInEntity(entity, indexColumn.getColumnName(), indexValue)) {
-                        result.add(entity);
-                    }
-                } catch (InterruptedException var10) {
-                    throw new StoreCassandraException("operation interupted");
-                } catch (ExecutionException var11) {
-                    throw new StoreCassandraException(var11);
-                }
-            }
-
-            return result;
         }
+
+        List<ListenableFuture<T>> futureList = Lists.newArrayList();
+
+        //get the primary keys's value by index
+        com.datastax.driver.core.querybuilder.Select.Where select = QueryBuilder.select().all()
+                .from(getIndexTableName(indexColumn.getColumnName()))
+                .where(QueryBuilder.eq(indexColumn.getColumnName(), indexValue));
+
+        if (this.getReadConsistency() != null) {
+            select.setConsistencyLevel(this.getReadConsistency());
+        }
+        for (Row row : getSession().execute(select)) {
+            futureList.add(this.getAsync(getPrimaryKeyValues(row)));
+        }
+
+        /*
+         * Since we won't update the index table while the index
+         * column is updated in the original table there may exist
+         * some obsolete index If the value of the index column in the
+         * original table doesn't match the indexValue delete this
+         * index
+         */
+        for (ListenableFuture<T> future : futureList) {
+            try {
+                T entity = future.get();
+
+                if (isIndexValueMatchValueInEntity(entity, indexColumn.getColumnName(), indexValue)) {
+                    result.add(entity);
+                }
+            } catch (InterruptedException e) {
+                throw new StoreCassandraException("operation interupted");
+            } catch (ExecutionException e) {
+                throw new StoreCassandraException(e);
+            }
+
+        }
+        return result;
     }
 
     public ListenableFuture<List<T>> getByIndexAsync(final String indexField, final Object indexValue) {
-        return this.listeningService.submit(new Callable<List<T>>() {
+        return listeningService.submit(new Callable<List<T>>() {
+
+            @Override
             public List<T> call() throws Exception {
-                return CassandraObjectMapper.this.getByIndex(indexField, indexValue);
+                return getByIndex(indexField, indexValue);
             }
+
         });
     }
 
@@ -263,24 +301,37 @@ public class CassandraObjectMapper<T> extends CassandraTemplate {
         if (this.getReadConsistency() != null) {
             getQuery.setConsistencyLevel(this.getReadConsistency());
         }
-
         return getQuery;
     }
 
+
+
+
+
+    /*
+     * ===========================================
+     *
+     * delete methods: delete/deleteWithIndex
+     *
+     * ===========================================
+     */
+
     public void delete(Object... primaryKey) {
-        Statement deleteQuery = this.getDeleleQuery(primaryKey);
+        Statement deleteQuery = getDeleleQuery(primaryKey);
         this.getSession().execute(deleteQuery);
     }
 
+
     public void deleteWithIndex(Object... primaryKey) {
         T entity = this.get(primaryKey);
-        if (null != entity) {
-            this.deleteInternal(entity);
+        if (null == entity) {
+            return;
         }
+        deleteInternal(entity);
     }
 
     public void deleteWithIndex(T entity) {
-        this.deleteInternal(entity);
+        deleteInternal(entity);
     }
 
     public void delete(T entity) {
@@ -288,13 +339,13 @@ public class CassandraObjectMapper<T> extends CassandraTemplate {
         if (this.getWriteConsistency() != null) {
             deleteQuery.setConsistencyLevel(this.getWriteConsistency());
         }
-
         this.getSession().execute(deleteQuery);
     }
 
-    public ListenableFuture<Object> deleteAsync(Object... primaryKey) {
-        Statement deleteQuery = this.getDeleleQuery(primaryKey);
-        return Futures.transform(this.getSession().executeAsync(deleteQuery), this.NOOP);
+    public ListenableFuture<Void> deleteAsync(Object... primaryKey) {
+        Statement deleteQuery = getDeleleQuery(primaryKey);
+
+        return Futures.transform(this.getSession().executeAsync(deleteQuery), NOOP);
     }
 
     public Statement getDeleleQuery(Object... primaryKey) {
@@ -302,140 +353,138 @@ public class CassandraObjectMapper<T> extends CassandraTemplate {
         if (this.getWriteConsistency() != null) {
             deleteQuery.setConsistencyLevel(this.getWriteConsistency());
         }
-
         return deleteQuery;
     }
 
     private boolean isIndexValueMatchValueInEntity(T entity, String indexName, Object indexValue) {
-        Object actualValue = this.getColumnValue(entity, (Method)this.columnGetterMap.get(indexName));
+        Object actualValue = getColumnValue(entity, columnGetterMap.get(indexName));
         if (!indexValue.equals(actualValue)) {
-            this.logger.debug("index [{}] actual value is {}, value in index table is {}", new Object[]{indexName, actualValue, indexValue});
-            com.datastax.driver.core.querybuilder.Delete.Where delete = this.getDeleteIndexStatement(entity, indexName, indexValue);
-            this.getSession().executeAsync(delete);
+            logger.debug("index [{}] actual value is {}, value in index table is {}", indexName, actualValue,
+                    indexValue);
+            //the index is obsolete, delete the index asynchronously
+            com.datastax.driver.core.querybuilder.Delete.Where delete = getDeleteIndexStatement(entity, indexName,
+                    indexValue);
+
+            getSession().executeAsync(delete);
             return false;
-        } else {
-            return true;
+
         }
+        return true;
     }
 
-    private com.datastax.driver.core.querybuilder.Delete.Where getDeleteIndexStatement(T entity, String indexName, Object indexValue) {
-        com.datastax.driver.core.querybuilder.Delete.Where delete = QueryBuilder.delete().from(this.getIndexTableName(indexName)).where(QueryBuilder.eq(indexName, indexValue));
-        Iterator i$ = this.primaryKeyColumns.iterator();
-
-        while(i$.hasNext()) {
-            String primaryKey = (String)i$.next();
+    private com.datastax.driver.core.querybuilder.Delete.Where getDeleteIndexStatement(T entity, String indexName,
+            Object indexValue) {
+        com.datastax.driver.core.querybuilder.Delete.Where delete = QueryBuilder.delete()
+                .from(getIndexTableName(indexName)).where(QueryBuilder.eq(indexName, indexValue));
+        for (String primaryKey : primaryKeyColumns) {
             if (!primaryKey.equals(indexName)) {
-                Object columnValue = this.getColumnValue(entity, (Method)this.columnGetterMap.get(primaryKey));
+                Object columnValue = getColumnValue(entity, columnGetterMap.get(primaryKey));
                 delete.and(QueryBuilder.eq(primaryKey, columnValue));
             }
         }
-
         return delete;
     }
 
     private Object[] getPrimaryKeyValues(Row row) {
         List<Object> result = Lists.newArrayList();
-        Iterator i$ = this.primaryKeyColumns.iterator();
-
-        while(i$.hasNext()) {
-            String primaryKey = (String)i$.next();
+        for (String primaryKey : primaryKeyColumns) {
             Object value = row.getObject(primaryKey);
-            this.logger.debug("Get primary key: {}:{}", primaryKey, value);
+            logger.debug("Get primary key: {}:{}", primaryKey, value);
             result.add(value);
         }
-
         return result.toArray();
     }
 
     private Object getColumnValue(T entity, Method getMethod) {
         try {
-            return entity != null ? getMethod.invoke(entity) : null;
-        } catch (Exception var4) {
-            throw new StoreCassandraException(var4);
+            if (entity != null) {
+                return getMethod.invoke(entity);
+            }
+            return null;
+        } catch (Exception e) {
+            throw new StoreCassandraException(e);
         }
     }
 
     private Method getReadMethod(Field field) {
+        PropertyDescriptor pd;
         try {
-            PropertyDescriptor pd = new PropertyDescriptor(field.getName(), this.clazz);
+            pd = new PropertyDescriptor(field.getName(), clazz);
             return pd.getReadMethod();
-        } catch (IntrospectionException var4) {
-            throw new StoreCassandraException(var4);
+        } catch (IntrospectionException e) {
+            throw new StoreCassandraException(e);
         }
     }
 
     private void validTableAnnotation() {
         if (!this.clazz.isAnnotationPresent(Table.class)) {
-            throw new IllegalArgumentException("Error initialing CassandraObjectMapper because Table annotation missing in class " + this.clazz.getSimpleName());
-        } else {
-            Table tableAnnotation = (Table)this.clazz.getAnnotation(Table.class);
-            this.tableName = tableAnnotation.name();
-            if (Strings.isNullOrEmpty(this.tableName)) {
-                throw new IllegalArgumentException("Error initialing CassandraObjectMapper because Table name mssing in Table annotation.");
-            }
+            throw new IllegalArgumentException(
+                    "Error initialing CassandraObjectMapper because Table annotation missing in class "
+                            + clazz.getSimpleName());
+        }
+
+        Table tableAnnotation = clazz.getAnnotation(Table.class);
+        this.tableName = tableAnnotation.name();
+        if (Strings.isNullOrEmpty(this.tableName)) {
+            throw new IllegalArgumentException(
+                    "Error initialing CassandraObjectMapper because Table name mssing in Table annotation.");
         }
     }
 
     private List<Object> getPrimaryKeyValues(T entity) {
         List<Object> primaryKeyValues = Lists.newArrayList();
-        Iterator i$ = this.primaryKeyColumns.iterator();
+        for (String primaryKey : primaryKeyColumns) {
+            primaryKeyValues.add(getColumnValue(entity, columnGetterMap.get(primaryKey)));
 
-        while(i$.hasNext()) {
-            String primaryKey = (String)i$.next();
-            primaryKeyValues.add(this.getColumnValue(entity, (Method)this.columnGetterMap.get(primaryKey)));
         }
-
         return primaryKeyValues;
     }
 
     private void deleteInternal(T entity) {
+        //use batch statement to DELETE entity and its indexes in transaction
         BatchStatement batch = new BatchStatement();
-        List<Statement> statements = this.getDeleteWithIndexStatements(entity);
-        Iterator i$ = statements.iterator();
-
-        while(i$.hasNext()) {
-            Statement statement = (Statement)i$.next();
+        //save the entity
+        List<Statement> statements = getDeleteWithIndexStatements(entity);
+        for (Statement statement : statements) {
             batch.add(statement);
         }
 
         if (this.getWriteConsistency() != null) {
             batch.setConsistencyLevel(this.getWriteConsistency());
         }
-
         this.getSession().execute(batch);
     }
 
     private List<Statement> getDeleteWithIndexStatements(T entity) {
         List<Statement> result = Lists.newArrayList();
         result.add(this.getMapper().deleteQuery(entity));
-        Iterator i$ = this.indexNameMap.values().iterator();
-
-        while(i$.hasNext()) {
-            CassandraObjectMapper<T>.IndexColumnInfo index = (CassandraObjectMapper.IndexColumnInfo)i$.next();
-            Object indexValue = this.getColumnValue(entity, (Method)this.columnGetterMap.get(index.getColumnName()));
-            com.datastax.driver.core.querybuilder.Delete.Where delete = this.getDeleteIndexStatement(entity, index.getColumnName(), indexValue);
+        for (IndexColumnInfo index : indexNameMap.values()) {
+            Object indexValue = getColumnValue(entity, columnGetterMap.get(index.getColumnName()));
+            com.datastax.driver.core.querybuilder.Delete.Where delete = getDeleteIndexStatement(entity,
+                    index.getColumnName(), indexValue);
             result.add(delete);
         }
-
         return result;
     }
 
     public List<Statement> getDeleteWithIndexStatements(Object... primaryKey) {
         T entity = this.get(primaryKey);
-        return (List)(null == entity ? Lists.newArrayList() : this.getDeleteWithIndexStatements(entity));
+        if (null == entity) {
+            return Lists.newArrayList();
+        }
+        return getDeleteWithIndexStatements(entity);
     }
 
     private Mapper<T> getMapper() {
         if (this.mapper == null) {
-            synchronized(this) {
+            synchronized (this) {
                 if (this.mapper == null) {
-                	//Each entity class (annotated with @Table) is managed by a dedicated Mapper object. Obtains this object from the MappingManager
+					//Each entity class (annotated with @Table) is managed by a dedicated Mapper object. Obtains this object from the MappingManager
                 	//Mapper objects are thread-safe. The manager caches them internally, so calling manager#mapper more than once for the same class will return the previously generated mapper.
-                    this.mapper = this.getMappingManager().mapper(this.clazz);
+                    this.mapper = getMappingManager().mapper(clazz);
                 }
             }
         }
-
         return this.mapper;
     }
 
@@ -444,7 +493,7 @@ public class CassandraObjectMapper<T> extends CassandraTemplate {
     }
 
     public ConsistencyLevel getReadConsistency() {
-        return this.readConsistency;
+        return readConsistency;
     }
 
     public void setReadConsistency(ConsistencyLevel readConsistency) {
@@ -452,7 +501,7 @@ public class CassandraObjectMapper<T> extends CassandraTemplate {
     }
 
     public ConsistencyLevel getWriteConsistency() {
-        return this.writeConsistency;
+        return writeConsistency;
     }
 
     public void setWriteConsistency(ConsistencyLevel writeConsistency) {
@@ -460,8 +509,9 @@ public class CassandraObjectMapper<T> extends CassandraTemplate {
     }
 
     public String getTableName() {
-        return this.tableName;
+        return tableName;
     }
+
 
     private class IndexColumnInfo {
         private String fieldName;
@@ -475,11 +525,14 @@ public class CassandraObjectMapper<T> extends CassandraTemplate {
         }
 
         public String getColumnName() {
-            return this.columnName;
+            return columnName;
         }
 
         public boolean isPrimaryKey() {
-            return this.isPrimaryKey;
+            return isPrimaryKey;
         }
+
     }
+
 }
+

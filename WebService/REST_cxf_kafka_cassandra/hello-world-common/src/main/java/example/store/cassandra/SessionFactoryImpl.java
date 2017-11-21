@@ -41,80 +41,77 @@ public class SessionFactoryImpl implements SessionFactory {
     }
 
     public void init() {
-        this.logger.info(" Session Factory begin to init with contact address [{}],local dc [{}],username [{}]", new Object[]{this.contactPointsWithPorts, this.localDc, this.username});
-        Builder clusterBuilder = Cluster.builder().addContactPointsWithPorts(this.assembleContactPointsWithPorts()).withLoadBalancingPolicy(DCAwareRoundRobinPolicy.builder().withLocalDc(this.localDc).build()).withRetryPolicy(DowngradingConsistencyRetryPolicy.INSTANCE);
-        if (StringUtils.isNotBlank(this.username) && StringUtils.isNotBlank(this.password)) {
-            clusterBuilder.withCredentials(this.username, this.password);
+    	logger.info(" Session Factory begin to init with contact address [{}],local dc [{}],username [{}]",
+                contactPointsWithPorts, localDc, username);
+        Builder clusterBuilder = Cluster.builder().addContactPointsWithPorts(assembleContactPointsWithPorts())
+                .withLoadBalancingPolicy(DCAwareRoundRobinPolicy.builder().withLocalDc(localDc).build())
+                .withRetryPolicy(DowngradingConsistencyRetryPolicy.INSTANCE);
+        if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
+            clusterBuilder.withCredentials(username, password);
         }
-
-        if (this.isSSLConfigured()) {
-            this.logger.info("ssl is configured");
+        if (isSSLConfigured()) {
+            logger.info("ssl is configured");
             clusterBuilder.withSSL();
         }
 
         //cluster holds the known state of the actual Cassandra cluster (notably the Metadata). This class is thread-safe and should be reused
         this.cluster = clusterBuilder.build();
-        this.logger.info(" Session Factory init finish !");
+        logger.info(" Session Factory init finish !");
     }
 
     boolean isSSLConfigured() {
-        if (!this.sslEnabled) {
+        if (!sslEnabled) {
             return false;
-        } else if (StringUtils.isBlank(this.trustStorePath)) {
-            throw new StoreCassandraException("trust store path can not be null!");
-        } else {
-            this.logger.debug("trustStorePath is {}", this.trustStorePath);
-            System.setProperty("javax.net.ssl.trustStore", this.trustStorePath);
-            if (this.trustStorePassword == null) {
-                this.logger.warn("trust store password is null");
-            } else {
-                System.setProperty("javax.net.ssl.trustStorePassword", this.trustStorePassword);
-            }
-
-            if (StringUtils.isNotBlank(this.keyStorePath)) {
-                this.logger.debug("keyStorePath is {}", this.keyStorePath);
-                System.setProperty("javax.net.ssl.keyStore", this.keyStorePath);
-                if (this.keyStorePassword == null) {
-                    this.logger.warn("key store password is null");
-                } else {
-                    System.setProperty("javax.net.ssl.keyStorePassword", this.keyStorePassword);
-                }
-            }
-
-            return true;
         }
+        if (StringUtils.isBlank(trustStorePath)){
+            throw new StoreCassandraException("trust store path can not be null!");
+        }
+        logger.debug("trustStorePath is {}",trustStorePath);
+        System.setProperty(TRUST_STORE_SYS_PROP, trustStorePath);
+        if (trustStorePassword == null) {
+            logger.warn("trust store password is null");
+        } else {
+            System.setProperty(TRUST_STORE_PW_SYS_PROP, trustStorePassword);
+        }
+
+        if (StringUtils.isNotBlank(keyStorePath)) {
+            logger.debug("keyStorePath is {}", keyStorePath);
+            System.setProperty(KEY_STORE_SYS_PROP, keyStorePath);
+            if (keyStorePassword == null) {
+                logger.warn("key store password is null");
+            } else {
+                System.setProperty(KEY_STORE_PW_SYS_PROP, keyStorePassword);
+            }
+        }
+        return true;
     }
 
     private Collection<InetSocketAddress> assembleContactPointsWithPorts() {
-        Collection<InetSocketAddress> addresses = null;
-        String[] contactPointsWithPortArray = StringUtils.split(this.contactPointsWithPorts, ",");
-        if (contactPointsWithPortArray != null && contactPointsWithPortArray.length > 0) {
-            addresses = new HashSet();
-            String[] arr$ = contactPointsWithPortArray;
-            int len$ = contactPointsWithPortArray.length;
-
-            for(int i$ = 0; i$ < len$; ++i$) {
-                String contactPointsWithPort = arr$[i$];
-                String[] ipAndPort = StringUtils.split(contactPointsWithPort, ":");
+		Collection<InetSocketAddress> addresses = null;
+		String[] contactPointsWithPortArray = StringUtils.split(contactPointsWithPorts, ",");
+		if ((contactPointsWithPortArray != null) && (contactPointsWithPortArray.length > 0)) {
+            addresses = new HashSet<InetSocketAddress>();
+			for (String contactPointsWithPort : contactPointsWithPortArray) {
+				String[] ipAndPort = StringUtils.split(contactPointsWithPort, ":");
                 String ip = ipAndPort[0];
-                int port = this.defaultPort;
-                if (ipAndPort.length > 1 && StringUtils.isNotBlank(ipAndPort[1])) {
-                    if (StringUtils.isNumeric(ipAndPort[1])) {
-                        port = Integer.parseInt(ipAndPort[1]);
-                    } else {
-                        this.logger.error("Cassandra ContactPointsWithPort :" + contactPointsWithPort + " invalid port!");
-                    }
+				int port = defaultPort;
+                if ((ipAndPort.length > 1) && StringUtils.isNotBlank(ipAndPort[1])) {
+					if (StringUtils.isNumeric(ipAndPort[1])) {
+						port = Integer.parseInt(ipAndPort[1]);
+					} else {
+						logger.error("Cassandra ContactPointsWithPort :" + contactPointsWithPort + " invalid port!");
+                	}
                 }
+				addresses.add(new InetSocketAddress(ip, port));
 
-                addresses.add(new InetSocketAddress(ip, port));
             }
-        } else {
-            this.logger.error("Cassandra ContactPointsWithPorts is empty!");
+		} else {
+			logger.error("Cassandra ContactPointsWithPorts is empty!");
         }
+		return addresses;
+	}
 
-        return addresses;
-    }
-
+    @Override
     public Session getSession() {
         if (this.cluster.isClosed()) {
             this.logger.warn("the cluster has been close for some reason, init again");
@@ -137,6 +134,7 @@ public class SessionFactoryImpl implements SessionFactory {
         return this.session;
     }
 
+    @Override
     public void destroy() {
         if (this.session != null) {
             this.session.close();

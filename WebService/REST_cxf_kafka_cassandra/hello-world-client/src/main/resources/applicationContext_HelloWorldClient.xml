@@ -1,0 +1,93 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+       xmlns:jaxrs-client="http://cxf.apache.org/jaxrs-client"
+       xmlns:http="http://cxf.apache.org/transports/http/configuration"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:cxf="http://cxf.apache.org/core"
+       xmlns:clustering="http://cxf.apache.org/clustering"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                        http://cxf.apache.org/jaxrs
+                        http://cxf.apache.org/schemas/jaxrs.xsd
+                        http://cxf.apache.org/jaxrs-client
+                        http://cxf.apache.org/schemas/jaxrs-client.xsd
+                        http://www.springframework.org/schema/aop
+                        http://www.springframework.org/schema/aop/spring-aop.xsd
+                        http://cxf.apache.org/transports/http/configuration
+                        http://cxf.apache.org/schemas/configuration/http-conf.xsd
+                        http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd">
+
+	<aop:aspectj-autoproxy />
+
+    <bean id="helloWorldAddressProvider" class="example.foundation.servicediscovery.support.AddressProvider">
+        <property name="serviceName" value="hello-world"/>
+    </bean>
+
+    <bean id="helloWorldTargetSelector" class="org.apache.cxf.clustering.SdLbsTargetSelector">
+        <property name="addressProvider" ref="helloWorldAddressProvider"/>
+    </bean>
+
+    <jaxrs-client:client id="helloWorldServiceImpl"
+                  address="http://service.address/unused"
+                  serviceClass="example.service.api.HelloWorldService"
+                  threadSafe="true">
+        <jaxrs-client:features>
+            <clustering:failover>
+                <clustering:targetSelector>
+                    <ref bean="helloWorldTargetSelector"/>
+                </clustering:targetSelector>
+            </clustering:failover>
+        </jaxrs-client:features>
+        <jaxrs-client:providers>
+            <ref bean="jacksonJaxbJsonProvider" />
+            <ref bean="helloWorldClientServiceClientMapper" />
+        </jaxrs-client:providers>
+        <jaxrs-client:outInterceptors>
+            <ref bean="logTraceInterceptor"/>
+        </jaxrs-client:outInterceptors>
+    </jaxrs-client:client>
+
+    <bean id="helloWorldServiceProxy" class="example.client.HelloWorldServiceProxy" factory-method="getHelloWorldServiceProxy" lazy-init="true" >
+        <constructor-arg ref="helloWorldServiceImpl"/>
+    </bean>
+
+    <bean id="helloWorldServiceClientImpl" class="example.client.HelloWorldServiceClientImpl" lazy-init="true" >
+        <property name="helloWorldService" ref="helloWorldServiceProxy" />
+    </bean>
+
+    <bean id="helloWorldClientServiceClientMapper"
+          class="example.client.exception.HelloWorldClientServiceClientMapper" />
+        
+    <bean id="logTraceInterceptor" class="se.ericsson.nrg.wsf.common.log.CxfLogTraceInterceptor"/>
+
+	<bean id="jacksonJaxbJsonProvider"
+		class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider" />
+
+    <http:conduit name="*.http-conduit">
+        <http:client ConnectionTimeout="30000" ReceiveTimeout="30000" />
+    </http:conduit>
+
+    <beans profile="dev,ut,ct">
+        <bean id="helloWorldAddressProvider" class="com.ericsson.jee.exposure.sd.support.address.AddressProvider">
+            <property name="serviceName" value="test_service"/>
+        </bean>
+        <bean id="logInbound" class="org.apache.cxf.interceptor.LoggingInInterceptor" />
+        <bean id="logOutbound" class="org.apache.cxf.interceptor.LoggingOutInterceptor" />
+        <cxf:bus>
+            <cxf:inInterceptors>
+                <ref bean="logInbound" />
+            </cxf:inInterceptors>
+            <cxf:outInterceptors>
+                <ref bean="logOutbound" />
+            </cxf:outInterceptors>
+            <cxf:inFaultInterceptors>
+                <ref bean="logInbound" />
+            </cxf:inFaultInterceptors>
+            <cxf:outFaultInterceptors>
+                <ref bean="logOutbound" />
+            </cxf:outFaultInterceptors>
+        </cxf:bus>
+    </beans>
+
+</beans>

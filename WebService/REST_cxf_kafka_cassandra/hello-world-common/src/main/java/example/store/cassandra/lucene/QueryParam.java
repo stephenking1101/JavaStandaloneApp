@@ -12,71 +12,73 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import example.store.cassandra.exception.StoreCassandraException;
 
 public class QueryParam {
-	private List<String> attributes;
-    private List<String> excludeAttrs;
-    private String filter;
-    private String sortBy;
+	private List<String> attributes; //the attributes need to returned
+    private List<String> excludeAttrs; //the attributs not to returned
+    private String filter; //lucene expression , e.g, 'name:Pet* AND email:*@ericsson.com'
+    private String sortBy; //the attribute used to sort, only one attribute can be sort
     private SortType sortType;
-    private int startIndex;
-    private Integer count;
+    private int startIndex; //from the start index of the result set to return
+    private Integer count; //the number of results to return
+
     private QueryParser parser = new QueryParser("", new StandardAnalyzer());
 
-    public QueryParam() {
-    }
-
+    @Override
     public int hashCode() {
-        boolean kk = true;
+        final int prime = 31;
         int result = 1;
-        result = 31 * result + (this.attributes == null ? 0 : this.attributes.hashCode());
-        result = 31 * result + (this.excludeAttrs == null ? 0 : this.excludeAttrs.hashCode());
-        result = 31 * result + (this.filter == null ? 0 : this.getFilterHashCode());
-        result = 31 * result + (this.sortBy == null ? 0 : this.sortBy.hashCode());
-        if (this.sortBy != null) {
-            result = 31 * result + (this.sortType == null ? 0 : this.sortType.hashCode());
+        result = (prime * result) + ((attributes == null) ? 0 : attributes.hashCode());
+        result = (prime * result) + ((excludeAttrs == null) ? 0 : excludeAttrs.hashCode());
+        result = (prime * result) + ((filter == null) ? 0 : getFilterHashCode());
+        result = (prime * result) + ((sortBy == null) ? 0 : sortBy.hashCode());
+        if (sortBy != null) {
+            result = (prime * result) + ((sortType == null) ? 0 : sortType.hashCode());
         }
-
         return result;
     }
 
     private int getFilterHashCode() {
         try {
-            return this.parser.parse(this.filter).hashCode();
-        } catch (ParseException var2) {
-            throw new StoreCassandraException("parse filter error", var2);
+            return parser.parse(filter).hashCode();
+        } catch (ParseException e) {
+            throw new StoreCassandraException("parse filter error", e);
         }
     }
 
     public SortField toSortField() {
-        SimpleSortField simpleSortField = new SimpleSortField(this.sortBy);
-        return (SortField)(this.sortType != null ? simpleSortField.reverse(this.sortType.isReverse()) : simpleSortField);
+        SimpleSortField simpleSortField = new SimpleSortField(sortBy);
+        if (sortType != null) {
+            return simpleSortField.reverse(sortType.isReverse());
+        }
+        return simpleSortField;
     }
 
+
     public List<String> getAttributes() {
-        return this.attributes;
+        return attributes;
     }
 
     public void setAttributes(List<String> attributes) {
+        // sort the attributes list first , so that we can get the same hash code no matter the entries sequence
         if (attributes != null) {
             Collections.sort(attributes);
         }
-
         this.attributes = attributes;
     }
 
     public List<String> getExcludeAttrs() {
-        return this.excludeAttrs;
+        return excludeAttrs;
     }
 
     public void setExcludeAttrs(List<String> excludeAttrs) {
+        // sort the attributes list first , so that we can get the same hash code no matter the entries sequence
         if (excludeAttrs != null) {
             Collections.sort(excludeAttrs);
         }
-
         this.excludeAttrs = excludeAttrs;
     }
 
     public String getFilter() {
-        return this.filter;
+        return filter;
     }
 
     public void setFilter(String filter) {
@@ -84,15 +86,16 @@ public class QueryParam {
     }
 
     public String getSortBy() {
-        return this.sortBy;
+        return sortBy;
     }
 
     public void setSortBy(String sortBy) {
         this.sortBy = sortBy;
     }
 
+
     public int getStartIndex() {
-        return this.startIndex;
+        return startIndex;
     }
 
     public void setStartIndex(int startIndex) {
@@ -100,7 +103,7 @@ public class QueryParam {
     }
 
     public Integer getCount() {
-        return this.count;
+        return count;
     }
 
     public void setCount(Integer count) {
@@ -108,10 +111,12 @@ public class QueryParam {
     }
 
     public SortType getSortType() {
-        return this.sortType;
+        return sortType;
     }
 
     public void setSortType(SortType sortType) {
         this.sortType = sortType;
     }
+
+
 }

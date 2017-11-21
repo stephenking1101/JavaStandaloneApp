@@ -21,6 +21,8 @@
 		<kafka.version>0.11.0.0</kafka.version>
 		<spring-kafka.version>2.0.1.RELEASE</spring-kafka.version>
 		<spring.version>5.0.0.RELEASE</spring.version>
+		<cxf.version>3.2.1</cxf.version>
+		<dockerfile.dir>${project.build.directory}/docker-build</dockerfile.dir>
     </properties>
 
     <dependencyManagement>
@@ -131,6 +133,11 @@
             </dependency>
             <dependency>
                 <groupId>com.example</groupId>
+                <artifactId>hello-world-war</artifactId>
+                <version>${repo-internal-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.example</groupId>
                 <artifactId>hello-world-store</artifactId>
                 <version>${repo-internal-version}</version>
             </dependency>
@@ -148,7 +155,17 @@
             <dependency>
 			   <groupId>org.apache.cxf</groupId>
 			   <artifactId>cxf-rt-frontend-jaxrs</artifactId>
-			   <version>3.2.1</version>
+			   <version>${cxf.version}</version>
+			</dependency>
+			<dependency>
+	            <groupId>org.apache.cxf</groupId>
+	            <artifactId>cxf-rt-rs-client</artifactId>
+	            <version>${cxf.version}</version>
+	        </dependency>
+	        <dependency>
+			    <groupId>org.apache.cxf</groupId>
+			    <artifactId>cxf-rt-features-clustering</artifactId>
+			    <version>${cxf.version}</version>
 			</dependency>
 			<dependency>
                 <groupId>com.datastax.cassandra</groupId>
@@ -304,6 +321,12 @@
                         <artifactId>kafka-clients</artifactId>
                     </exclusion>
                 </exclusions>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-transports-http-jetty</artifactId>
+                <version>${cxf.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

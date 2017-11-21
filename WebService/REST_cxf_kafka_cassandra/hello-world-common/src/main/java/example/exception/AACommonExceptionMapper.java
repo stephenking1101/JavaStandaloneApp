@@ -1,33 +1,35 @@
 package example.exception;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Provider
 public class AACommonExceptionMapper implements ExceptionMapper<AACommonException> {
-    private Logger logger = LoggerFactory.getLogger(AACommonExceptionMapper.class);
 
-    public AACommonExceptionMapper() {
-    }
+    private Logger logger;
 
+    @Override
     public Response toResponse(AACommonException e) {
         if (e.getHttpStatus() >= Status.INTERNAL_SERVER_ERROR.getStatusCode()) {
-            this.logger.error(e.getMessage(), e);
+            logger.error(e.getMessage(), e);
         } else {
-            this.logger.debug(e.getMessage(), e);
+            logger.debug(e.getMessage(), e);
         }
 
-        return Response.status(e.getHttpStatus()).type("application/json").entity(e.getError()).build();
+        return Response.status(e.getHttpStatus()).type(MediaType.APPLICATION_JSON).entity(e.getError()).build();
     }
 
     public Logger getLogger() {
-        return this.logger;
+        return logger;
     }
 
     public void setLogger(Logger logger) {
         this.logger = logger;
     }
+
 }

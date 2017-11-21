@@ -1,24 +1,30 @@
 package example.exception;
 
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import org.codehaus.jackson.annotate.JsonAnyGetter;
-import org.codehaus.jackson.annotate.JsonAnySetter;
-import org.codehaus.jackson.annotate.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonGetter;
 
+/**
+ * The error includes error code, error description and extension
+ * information.
+ * 
+ * @see AACommonErrorEnum
+ * 
+ */
 public class AACommonError implements Serializable {
+
     private static final long serialVersionUID = -351614323035642044L;
-    @XmlElement(
-        name = "error"
-    )
+
+    @XmlElement(name = AACommonConstants.ERROR_FIELD_ERROR)
     private String error;
-    @XmlElement(
-        name = "error_description"
-    )
+    @XmlElement(name = AACommonConstants.ERROR_FIELD_ERROR_DESC)
     private String errorDescription;
     private Map<String, Object> extensions;
 
@@ -40,18 +46,18 @@ public class AACommonError implements Serializable {
         this.extensions = extensions;
     }
 
-    @JsonGetter("error")
+    @JsonGetter(value = AACommonConstants.ERROR_FIELD_ERROR)
     public String getError() {
-        return this.error;
+        return error;
     }
 
     public void setError(String error) {
         this.error = error;
     }
 
-    @JsonGetter("error_description")
+    @JsonGetter(value = AACommonConstants.ERROR_FIELD_ERROR_DESC)
     public String getErrorDescription() {
-        return this.errorDescription;
+        return errorDescription;
     }
 
     public void setErrorDescription(String errorDescription) {
@@ -60,23 +66,22 @@ public class AACommonError implements Serializable {
 
     @JsonAnyGetter
     public Map<String, Object> getExtensions() {
-        if (this.extensions == null) {
-            this.extensions = new HashMap();
+        if (extensions == null) {
+            extensions = new HashMap<String, Object>();
         }
-
-        return this.extensions;
+        return extensions;
     }
 
     @JsonAnySetter
     public void setExtensions(String name, Object value) {
-        if (this.extensions == null) {
-            this.extensions = new HashMap();
+        if (extensions == null) {
+            extensions = new HashMap<String, Object>();
         }
-
         this.extensions.put(name, value);
     }
 
+    @Override
     public String toString() {
-        return this.error + ": " + this.errorDescription + ":" + this.extensions;
+        return error + ": " + errorDescription + ":" + extensions;
     }
 }

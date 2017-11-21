@@ -8,15 +8,36 @@ import java.util.Map;
 import org.apache.commons.collections.MapUtils;
 
 public class AACommonException extends RuntimeException {
+
     private static final long serialVersionUID = 6851143173501965100L;
     private int httpStatus = 400;
+
+    /**
+     * please define it in AACommonErrorEnum
+     */
     private AACommonErrorEnum errorCode;
+
+    /**
+     * the information defined in json error file
+     */
     private AACommonError error;
+
+    /**
+     * add the extends information
+     */
     private Map<String, Object> extendInfo;
+
+    /**
+     * the value for error description variables please obey the order
+     */
     private String[] errorDescValueSortArray;
+    
+    /**
+     * shorten message for transaction log
+     */
     private String simpleMessage;
 
-    public AACommonException() {
+    public AACommonException(){
     }
 
     public AACommonException(AACommonErrorEnum errorCode) {
@@ -46,26 +67,24 @@ public class AACommonException extends RuntimeException {
     public AACommonException(AACommonErrorEnum errorCode, String[] errorDescValueSortArray) {
         this.errorCode = errorCode;
         if (errorDescValueSortArray != null) {
-            this.errorDescValueSortArray = (String[])Arrays.copyOf(errorDescValueSortArray, errorDescValueSortArray.length);
+            this.errorDescValueSortArray = Arrays.copyOf(errorDescValueSortArray, errorDescValueSortArray.length);
         }
-
     }
 
     public AACommonException(AACommonErrorEnum errorCode, String[] errorDescValueSortArray, int httpStatus) {
         this.errorCode = errorCode;
         if (errorDescValueSortArray != null) {
-            this.errorDescValueSortArray = (String[])Arrays.copyOf(errorDescValueSortArray, errorDescValueSortArray.length);
+            this.errorDescValueSortArray = Arrays.copyOf(errorDescValueSortArray, errorDescValueSortArray.length);
         }
-
         this.httpStatus = httpStatus;
     }
 
-    public AACommonException(AACommonErrorEnum errorCode, String[] errorDescValueSortArray, Map<String, Object> extendInfo) {
+    public AACommonException(AACommonErrorEnum errorCode, String[] errorDescValueSortArray,
+            Map<String, Object> extendInfo) {
         this.errorCode = errorCode;
         if (errorDescValueSortArray != null) {
-            this.errorDescValueSortArray = (String[])Arrays.copyOf(errorDescValueSortArray, errorDescValueSortArray.length);
+            this.errorDescValueSortArray = Arrays.copyOf(errorDescValueSortArray, errorDescValueSortArray.length);
         }
-
         this.extendInfo = extendInfo;
     }
 
@@ -91,81 +110,83 @@ public class AACommonException extends RuntimeException {
         this.httpStatus = statusCode;
     }
 
-    public AACommonException(AACommonErrorEnum errorCode, String[] errorDescValueSortArray, Throwable cause, int statusCode) {
-        super((String)null, cause);
+    public AACommonException(AACommonErrorEnum errorCode, String[] errorDescValueSortArray, Throwable cause,
+            int statusCode) {
+        super(null, cause);
         this.errorCode = errorCode;
         this.httpStatus = statusCode;
         if (errorDescValueSortArray != null) {
-            this.errorDescValueSortArray = (String[])Arrays.copyOf(errorDescValueSortArray, errorDescValueSortArray.length);
+            this.errorDescValueSortArray = Arrays.copyOf(errorDescValueSortArray, errorDescValueSortArray.length);
         }
-
     }
 
     public AACommonError getError() {
-        if (this.error == null) {
+        if (error == null) {
             Map<String, Object> errorMap = ErrorConfigurationHelper.getError(this.errorCode.getErrorCode());
+
             if (MapUtils.isEmpty(errorMap)) {
                 errorMap = ErrorConfigurationHelper.getError(AACommonErrorEnum.INTERNAL_SERVER_ERROR.getErrorCode());
-                this.httpStatus = Integer.parseInt(errorMap.get("http_status").toString());
-                errorMap.remove("http_status");
-                this.error = this.buildError(errorMap);
+                httpStatus = Integer.parseInt(errorMap.get(AACommonConstants.ERROR_FIELD_HTTP_STATUS).toString());
+                errorMap.remove(AACommonConstants.ERROR_FIELD_HTTP_STATUS);
+                error = buildError(errorMap);
                 return this.error;
             }
 
-            if (errorMap.get("http_status") != null) {
-                this.httpStatus = Integer.parseInt(errorMap.get("http_status").toString());
-                errorMap.remove("http_status");
+            if (errorMap.get(AACommonConstants.ERROR_FIELD_HTTP_STATUS) != null) {
+                httpStatus = Integer.parseInt(errorMap.get(AACommonConstants.ERROR_FIELD_HTTP_STATUS).toString());
+                errorMap.remove(AACommonConstants.ERROR_FIELD_HTTP_STATUS);
             }
 
-            if (errorMap.get("error_description") != null && this.errorDescValueSortArray != null) {
-                errorMap.put("error_description", MessageFormat.format(errorMap.get("error_description").toString(), this.errorDescValueSortArray));
+            if ((errorMap.get(AACommonConstants.ERROR_FIELD_ERROR_DESC) != null) && (errorDescValueSortArray != null)) {
+                errorMap.put(AACommonConstants.ERROR_FIELD_ERROR_DESC, MessageFormat.format(
+                        errorMap.get(AACommonConstants.ERROR_FIELD_ERROR_DESC).toString(), errorDescValueSortArray));
             }
-
-            if (errorMap.containsKey("message")) {
-                this.setSimpleMessage((String)errorMap.get("message"));
+            
+            if(errorMap.containsKey(AACommonConstants.MESSAGE_TRANSACTION)){
+                this.setSimpleMessage((String) errorMap.get(AACommonConstants.MESSAGE_TRANSACTION));
             }
-
-            if (this.extendInfo != null) {
-                Iterator i$ = this.extendInfo.keySet().iterator();
-
-                while(i$.hasNext()) {
-                    String key = (String)i$.next();
+            // add extend info
+            if (extendInfo != null) {
+                for (String key : extendInfo.keySet()) {
                     if (!errorMap.containsKey(key)) {
-                        errorMap.put(key, this.extendInfo.get(key));
+                        errorMap.put(key, extendInfo.get(key));
                     }
                 }
             }
 
-            this.error = this.buildError(errorMap);
+            error = buildError(errorMap);
         }
-
         return this.error;
     }
 
     private AACommonError buildError(Map<String, Object> errorMap) {
         if (MapUtils.isEmpty(errorMap)) {
             return null;
-        } else {
-            String errorStr = (String)errorMap.get("error");
-            String errorDesc = (String)errorMap.get("error_description");
-            errorMap.remove("error");
-            errorMap.remove("error_description");
-            errorMap.remove("message");
-            return new AACommonError(errorStr, errorDesc, errorMap);
         }
+
+        String errorStr = (String) errorMap.get(AACommonConstants.ERROR_FIELD_ERROR);
+        String errorDesc = (String) errorMap.get(AACommonConstants.ERROR_FIELD_ERROR_DESC);
+        errorMap.remove(AACommonConstants.ERROR_FIELD_ERROR);
+        errorMap.remove(AACommonConstants.ERROR_FIELD_ERROR_DESC);
+        errorMap.remove(AACommonConstants.MESSAGE_TRANSACTION);
+        return new AACommonError(errorStr, errorDesc, errorMap);
     }
 
+    @Override
     public String getMessage() {
         if (super.getMessage() != null) {
             return super.getMessage();
-        } else {
-            AACommonError err = this.getError();
-            return this.getSimpleMessage() != null ? this.getSimpleMessage() : err.getErrorDescription();
         }
+        AACommonError err = getError();
+        if(this.getSimpleMessage()!=null){
+            return this.getSimpleMessage();
+        }
+       
+        return err.getErrorDescription();
     }
 
     public AACommonErrorEnum getErrorCode() {
-        return this.errorCode;
+        return errorCode;
     }
 
     public void setErrorCode(AACommonErrorEnum errorCode) {
@@ -173,8 +194,8 @@ public class AACommonException extends RuntimeException {
     }
 
     public int getHttpStatus() {
-        this.getError();
-        return this.httpStatus;
+        getError();
+        return httpStatus;
     }
 
     public void setHttpStatus(int httpStatus) {
@@ -182,7 +203,7 @@ public class AACommonException extends RuntimeException {
     }
 
     public String[] getErrorDescValueSortArray() {
-        return this.errorDescValueSortArray;
+        return errorDescValueSortArray;
     }
 
     public void setError(AACommonError error) {
@@ -190,7 +211,7 @@ public class AACommonException extends RuntimeException {
     }
 
     public Map<String, Object> getExtendInfo() {
-        return this.extendInfo;
+        return extendInfo;
     }
 
     public void setExtInfo(Map<String, Object> extendInfo) {
@@ -198,7 +219,7 @@ public class AACommonException extends RuntimeException {
     }
 
     public String getSimpleMessage() {
-        return this.simpleMessage;
+        return simpleMessage;
     }
 
     public void setSimpleMessage(String simpleMessage) {

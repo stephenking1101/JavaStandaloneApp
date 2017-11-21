@@ -8,9 +8,6 @@ public class CassandraTemplate {
 	private SessionFactory sessionFactory;
     private volatile MappingManager mappingManager;
 
-    public CassandraTemplate() {
-    }
-
     //泛型只在编译阶段有效
     /**
      * 泛型方法的基本介绍
