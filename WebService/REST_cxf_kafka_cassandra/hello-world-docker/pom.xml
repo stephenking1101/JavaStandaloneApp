@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- COPYRIGHT Ericsson Telecommunicatie B.V., 2011 All rights reserved. The copyright to the computer program(s) herein 
+    is the property of Ericsson Telecommunicatie B.V.. The programs may be used and/or copied only with written permission from 
+    Ericsson Telecommunicatie B.V. or in accordance with the terms and conditions stipulated in the agreement/contract under 
+    which the program(s) have been supplied. THIS SOFTWARE IS PROVIDED "AS IS" AND ANY REPRESENTATIONS OR WARRANTIES ABOUT THE 
+    SUITABILITY OF THE SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY, 
+    FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT ARE DISCLAIMED. ERICSSON TELECOMMUNICATIE B.V. SHALL NOT BE LIABLE 
+    FOR ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>hello-world-parent</artifactId>
+        <groupId>com.example</groupId>
+        <version>master-SNAPSHOT</version>
+        <relativePath>../hello-world-parent/</relativePath>
+    </parent>
+
+    <artifactId>hello-world-docker</artifactId>
+    <packaging>docker</packaging>
+    <name>${project.groupId}:${project.artifactId}</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>hello-world-war</artifactId>
+        </dependency>
+	</dependencies>
+
+    <build>
+		<resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <targetPath>${dockerfile.dir}</targetPath>
+            </resource>
+            <resource>
+                <directory>src/main/docker</directory>
+                <targetPath>${dockerfile.dir}</targetPath>
+				<filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/bin</directory>
+                <targetPath>${dockerfile.dir}</targetPath>
+            </resource>
+            <resource>
+                <directory>src/main/info</directory>
+                <targetPath>${dockerfile.dir}</targetPath>
+				<filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+			  <!--Docker 插件-->  
+              <!-- 构建镜像：       mvn docker:build -->  
+              <!-- 启动镜像：       mvn docker:start -->  
+              <!-- 停止镜像：       mvn docker:stop  -->  
+              <!-- 删除镜像：       mvn -Ddocker.removeAll docker:remove  -->  
+              <!-- 查看镜像日志：   mvn docker:logs -->  
+			  <groupId>io.fabric8</groupId>
+			  <artifactId>docker-maven-plugin</artifactId>
+			  <version>0.22.0</version>
+			  <!-- This will create the jar (if any), build the Docker images, start the configured Docker containers, runs the integration tests, stops the configured Docker container when you enter mvn install. With mvn deploy you can additionally push the images to a Docker configuration. Please note the <extensions>true</extensions> which is mandatory when you use a custom lifecycle. -->
+			  <extensions>true</extensions>
+			  <configuration>
+				<images>
+				  <image>
+					<build>
+					  <!--If the image name contains a registry part, this registry is used unconditionally and can not be overwritten from the outside.
+                          If an image name doesn’t contain a registry, then by default the default Docker registry docker.io is used for push and pull operations-->
+					  <name>${project.artifactId}</name> <!--生成的image名-->  
+					  <tags>
+						<tag>latest</tag>
+						<tag>${project.version}</tag>
+					  </tags>
+					  <!--specifies a directory containing a Dockerfile that will be used to create the image. The name of the Dockerfile is Dockerfile by default but can be also set with the option dockerFile-->
+					  <dockerFileDir>${dockerfile.dir}</dockerFileDir>
+					</build>
+				  </image>
+				</images>
+				<!--Decide how to pull missing base images or images to start-->
+				<autoPull>always</autoPull>
+			  </configuration>
+			</plugin>
+        </plugins>
+    </build>
+</project>
