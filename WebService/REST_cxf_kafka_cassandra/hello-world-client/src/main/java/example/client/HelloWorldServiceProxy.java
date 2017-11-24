@@ -20,21 +20,23 @@ public class HelloWorldServiceProxy implements InvocationHandler {
         this.helloWorldService = helloWorldService;
     }
 
-    public static Object getRbaServiceProxy(Object helloWorldService) {
+    //工厂方法，实例化一个动态代理，代理helloWorldService
+    public static Object getHelloWorldServiceProxy(Object helloWorldService) {
         Class cls = helloWorldService.getClass();
         return Proxy.newProxyInstance(cls.getClassLoader(),
                 cls.getInterfaces(), new HelloWorldServiceProxy(helloWorldService));
     }
 
-    private boolean isRbaClientEnabled() {
+    private boolean isHelloWorldClientEnabled() {
         return configurationService.getBoolean("helloworld.client.enabled", false);
     }
 
+    //调用helloWorldService方法
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Object result = null;
 
-        if(isRbaClientEnabled()){
+        if(isHelloWorldClientEnabled()){
             result = method.invoke(helloWorldService, args);
         }
 

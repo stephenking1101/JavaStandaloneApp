@@ -1,12 +1,16 @@
 FROM jetty:9.4-jre8
 LABEL name=@project.name@ \
       version=@project.version@
+      
+USER root
 
 RUN groupadd -r appuser \
     && useradd -r -g appuser appuser
-	  
+
 ARG group=appuser
 ARG user=appuser
+
+USER jetty
 
 COPY hello-world-war.war $JETTY_BASE/webapps/hello-world.war
 
@@ -25,6 +29,6 @@ ENV JVM_ARGS "-Xms1g -Xmx1g -XX:MaxPermSize=256m"
 ENV JVM_PROPS "-Dhttp.maxConnections=50 \
                -Dorg.eclipse.jetty.annotations.maxWait=600"
 
-USER ${user}
-
-CMD ["run.sh"]
+#USER ${user}
+#Usage: java -jar $JETTY_HOME/start.jar [options] [properties] [configs]
+#CMD ["run.sh"]

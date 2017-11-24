@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 
 import com.jayway.restassured.RestAssured;
 
-import example.test.cf.EmbeddedCassandraHelper;
-import example.test.cf.JettyFactory;
+import example.test.common.EmbeddedCassandraHelper;
+import example.test.common.JettyFactory;
 
 
 public class AbstractComponentTest {

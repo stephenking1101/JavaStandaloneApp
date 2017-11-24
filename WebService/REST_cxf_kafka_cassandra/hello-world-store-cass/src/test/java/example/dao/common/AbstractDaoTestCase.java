@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import example.test.cf.EmbeddedCassandraHelper;
+import example.test.common.EmbeddedCassandraHelper;
 
 @ContextConfiguration(locations = {"/applicationContext-store.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)

@@ -1,4 +1,4 @@
-package example.test.cf;
+package example.test.common;
 
 import java.io.BufferedReader;
 import java.io.IOException;

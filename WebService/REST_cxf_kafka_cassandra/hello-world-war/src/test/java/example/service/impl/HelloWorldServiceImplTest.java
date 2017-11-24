@@ -34,7 +34,7 @@ public class HelloWorldServiceImplTest {
         helloWorld.setExtension("v_bool", true);
         helloWorld.setExtension("v_str", "");
         
-        helloWorldManager.processSayHello(helloWorld);
+        helloWorldService.sayHello(helloWorld);
         verify(helloWorldManager).processSayHello(eq(helloWorld));
     }
 }

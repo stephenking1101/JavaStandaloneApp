@@ -22,7 +22,7 @@ import example.service.payload.HelloWorld;
 import example.service.util.AbstractComponentTest;
 import example.service.util.EmbeddedKafkaHelper;
 import example.service.util.HelloWorldTestConstants;
-import example.test.cf.EmbeddedCassandraHelper;
+import example.test.common.EmbeddedCassandraHelper;
 
 public class HelloWorldServiceCT extends AbstractComponentTest {
     private HelloWorld helloWorld;

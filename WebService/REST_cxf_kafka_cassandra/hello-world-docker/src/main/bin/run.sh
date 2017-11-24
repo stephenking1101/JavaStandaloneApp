@@ -1,2 +1,2 @@
 #!/bin/sh
-sh /usr/local/jetty/bin/start-jetty.sh
+/usr/local/jetty/bin/jetty.sh start

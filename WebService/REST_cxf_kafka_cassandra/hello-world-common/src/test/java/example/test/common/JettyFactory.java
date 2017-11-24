@@ -1,4 +1,4 @@
-package example.test.cf;
+package example.test.common;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;

@@ -1,4 +1,4 @@
-package example.test.cf;
+package example.test.common;
 
 import java.nio.charset.Charset;
 

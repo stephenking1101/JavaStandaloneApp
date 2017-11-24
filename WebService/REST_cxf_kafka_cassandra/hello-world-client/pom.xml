@@ -78,6 +78,8 @@
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <!-- Build a JAR of the test classes for the current project -->
+                <!-- Default classifier is: tests -->
                 <artifactId>maven-jar-plugin</artifactId>
                 <executions>
                     <execution>
@@ -86,7 +88,8 @@
                         </goals>
                         <configuration>
                             <includes>
-                                <include>example/client/ct/delegate/**</include>
+                                <!-- List of files to include -->
+                                <include>example/client/delegate/**</include>
                             </includes>
                         </configuration>
                     </execution>

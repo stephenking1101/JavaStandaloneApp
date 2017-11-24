@@ -24,6 +24,7 @@
         <dependency>
             <groupId>com.example</groupId>
             <artifactId>hello-world-war</artifactId>
+            <type>war</type>
         </dependency>
 	</dependencies>
 
@@ -58,16 +59,15 @@
               <!-- 查看镜像日志：   mvn docker:logs -->  
 			  <groupId>io.fabric8</groupId>
 			  <artifactId>docker-maven-plugin</artifactId>
-			  <version>0.22.0</version>
 			  <!-- This will create the jar (if any), build the Docker images, start the configured Docker containers, runs the integration tests, stops the configured Docker container when you enter mvn install. With mvn deploy you can additionally push the images to a Docker configuration. Please note the <extensions>true</extensions> which is mandatory when you use a custom lifecycle. -->
 			  <extensions>true</extensions>
 			  <configuration>
 				<images>
 				  <image>
+				    <!--If the image name contains a registry part, this registry is used unconditionally and can not be overwritten from the outside.
+                        If an image name doesn’t contain a registry, then by default the default Docker registry docker.io is used for push and pull operations-->
+                    <name>${project.artifactId}</name> <!--生成的image名-->  
 					<build>
-					  <!--If the image name contains a registry part, this registry is used unconditionally and can not be overwritten from the outside.
-                          If an image name doesn’t contain a registry, then by default the default Docker registry docker.io is used for push and pull operations-->
-					  <name>${project.artifactId}</name> <!--生成的image名-->  
 					  <tags>
 						<tag>latest</tag>
 						<tag>${project.version}</tag>
@@ -81,6 +81,65 @@
 				<autoPull>always</autoPull>
 			  </configuration>
 			</plugin>
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>prepare</id>
+                        <!-- Binds by default to the lifecycle phase: process-sources -->
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeArtifactIds>hello-world-war</includeArtifactIds>
+                            <outputDirectory>${dockerfile.dir}</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <stripVersion>true</stripVersion>
+                    <stripClassifier>true</stripClassifier>
+                </configuration>
+            </plugin>
         </plugins>
+        <pluginManagement>
+        	<plugins>
+        		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        		<plugin>
+        			<groupId>org.eclipse.m2e</groupId>
+        			<artifactId>lifecycle-mapping</artifactId>
+        			<version>1.0.0</version>
+        			<configuration>
+        				<lifecycleMappingMetadata>
+        					<pluginExecutions>
+        						<pluginExecution>
+        							<pluginExecutionFilter>
+        								<groupId>
+        									org.apache.maven.plugins
+        								</groupId>
+        								<artifactId>
+        									maven-dependency-plugin
+        								</artifactId>
+        								<versionRange>
+        									[2.10,)
+        								</versionRange>
+        								<goals>
+        									<goal>
+        										copy-dependencies
+        									</goal>
+        								</goals>
+        							</pluginExecutionFilter>
+        							<action>
+        								<ignore></ignore>
+        							</action>
+        						</pluginExecution>
+        					</pluginExecutions>
+        				</lifecycleMappingMetadata>
+        			</configuration>
+        		</plugin>
+        	</plugins>
+        </pluginManagement>
     </build>
 </project>

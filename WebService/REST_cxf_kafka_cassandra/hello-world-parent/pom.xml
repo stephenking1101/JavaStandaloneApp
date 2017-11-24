@@ -18,9 +18,10 @@
         <rest.assured.version>2.7.0</rest.assured.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  
 		<repo-internal-version>master-SNAPSHOT</repo-internal-version>
-		<kafka.version>0.11.0.0</kafka.version>
-		<spring-kafka.version>2.0.1.RELEASE</spring-kafka.version>
-		<spring.version>5.0.0.RELEASE</spring.version>
+		<kafka.version>1.0.0</kafka.version>
+		<spring-kafka-test.version>2.1.0.RC1</spring-kafka-test.version>
+		<spring-kafka.version>2.1.0.RC1</spring-kafka.version>
+		<spring.version>5.0.1.RELEASE</spring.version>
 		<cxf.version>3.2.1</cxf.version>
 		<dockerfile.dir>${project.build.directory}/docker-build</dockerfile.dir>
     </properties>
@@ -124,7 +125,11 @@
 		        <artifactId>spring-instrument</artifactId>
 		        <version>${spring.version}</version>
 		      </dependency>
-            
+            <dependency>
+			    <groupId>org.springframework.retry</groupId>
+			    <artifactId>spring-retry</artifactId>
+			    <version>1.2.1.RELEASE</version>
+			</dependency>
             <!--repo internal begins-->
             <dependency>
                 <groupId>com.example</groupId>
@@ -135,6 +140,7 @@
                 <groupId>com.example</groupId>
                 <artifactId>hello-world-war</artifactId>
                 <version>${repo-internal-version}</version>
+                <type>war</type>
             </dependency>
             <dependency>
                 <groupId>com.example</groupId>
@@ -213,6 +219,11 @@
                 <artifactId>commons-collections</artifactId>
                 <version>3.2.1</version>
             </dependency>
+            <dependency>
+			    <groupId>org.apache.commons</groupId>
+			    <artifactId>commons-lang3</artifactId>
+			    <version>3.2.1</version>
+			</dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-core</artifactId>
@@ -314,13 +325,38 @@
             <dependency>
                 <groupId>org.springframework.kafka</groupId>
                 <artifactId>spring-kafka-test</artifactId>
-                <version>${spring-kafka.version}</version>
+                <version>${spring-kafka-test.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.kafka</groupId>
                         <artifactId>kafka-clients</artifactId>
                     </exclusion>
                 </exclusions>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+			    <groupId>org.apache.kafka</groupId>
+			    <artifactId>kafka_2.11</artifactId>
+			    <version>${kafka.version}</version>
+			    <exclusions>
+		              <exclusion>
+		                  <groupId>org.slf4j</groupId>
+		                  <artifactId>slf4j-log4j12</artifactId>
+		              </exclusion>
+		        </exclusions>
+			    <scope>test</scope>
+			</dependency>
+			<dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka_2.11</artifactId>
+                <version>${kafka.version}</version>
+                <exclusions>
+                      <exclusion>
+                          <groupId>org.slf4j</groupId>
+                          <artifactId>slf4j-log4j12</artifactId>
+                      </exclusion>
+                </exclusions>
+                <classifier>test</classifier>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -347,6 +383,8 @@
                 <plugins>
                     <!-- Run component test -->
                     <plugin>
+                        <!-- The Surefire Plugin is used during the test phase of the build lifecycle to execute the unit tests of an application. -->
+                        <!-- It generates reports in ${basedir}/target/surefire-reports/TEST-*.xml. -->
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
@@ -362,12 +400,40 @@
     </profiles>
     
     <build>
+        <pluginManagement>
+             <plugins>
+                  <plugin>
+	                  <groupId>org.apache.maven.plugins</groupId>
+	                  <artifactId>maven-compiler-plugin</artifactId>
+	                  <version>3.3</version>
+                  </plugin>
+                  <plugin>
+                      <groupId>org.apache.maven.plugins</groupId>
+                      <artifactId>maven-surefire-plugin</artifactId>
+                      <version>2.20.1</version>
+                  </plugin>
+                  <plugin>
+		              <groupId>org.apache.maven.plugins</groupId>
+		              <artifactId>maven-dependency-plugin</artifactId>
+		              <version>2.10</version>
+		          </plugin>
+		          <plugin>
+					    <groupId>org.apache.maven.plugins</groupId>
+					    <artifactId>maven-jar-plugin</artifactId>
+					    <version>3.0.2</version>
+		          </plugin>
+                  <plugin>
+	                  <groupId>io.fabric8</groupId>
+		              <artifactId>docker-maven-plugin</artifactId>
+		              <version>0.22.0</version>
+                  </plugin>
+             </plugins>
+        </pluginManagement>
         <plugins>
             <!-- Set JDK Compiler Level -->
           <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
                 <configuration>
                     <source>${jdk.version}</source>
                     <target>${jdk.version}</target>
