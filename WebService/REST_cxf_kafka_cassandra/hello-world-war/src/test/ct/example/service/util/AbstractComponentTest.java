@@ -56,7 +56,7 @@ public class AbstractComponentTest {
 
     protected static Server startJetty(String url) throws Exception {
         if (new URL(url).getHost().equals("localhost")) {
-
+        	System.setProperty("INTERNAL_IP","192.168.0.1");
             System.setProperty("spring.profiles.active", "ct");
 
             Server server = JettyFactory.createServer(new URL(url).getPort(), new URL(url).getPath(), "src/main/webapp");

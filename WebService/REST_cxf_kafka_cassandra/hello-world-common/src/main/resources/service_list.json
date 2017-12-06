@@ -1,0 +1,7 @@
+{
+  "hello-world": {
+    "dp_name": "DP-Hello-World",
+    "service_uri": "http://{host}:{port}/hello-world",
+    "healthcheck_postfix": "/healthcheck"
+  }
+}

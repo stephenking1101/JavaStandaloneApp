@@ -38,11 +38,25 @@
             <artifactId>jackson-jaxrs-json-provider</artifactId>
         </dependency>
         <!--cxf end-->
+        <!-- logging starts -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-
+        <!-- logging ends -->
+        <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-aspects</artifactId>
+        </dependency>
+        
         <!--test begin-->
         <dependency>
             <groupId>org.apache.cxf</groupId>

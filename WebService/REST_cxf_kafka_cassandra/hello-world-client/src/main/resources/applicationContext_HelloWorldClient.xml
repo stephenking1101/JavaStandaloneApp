@@ -59,7 +59,7 @@
     <bean id="helloWorldClientServiceClientMapper"
           class="example.client.exception.HelloWorldClientServiceClientMapper" />
         
-    <bean id="logTraceInterceptor" class="se.ericsson.nrg.wsf.common.log.CxfLogTraceInterceptor"/>
+    <bean id="logTraceInterceptor" class="example.common.log.CxfLogTraceInterceptor"/>
 
 	<bean id="jacksonJaxbJsonProvider"
 		class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider" />
@@ -69,7 +69,7 @@
     </http:conduit>
 
     <beans profile="dev,ut,ct">
-        <bean id="helloWorldAddressProvider" class="com.ericsson.jee.exposure.sd.support.address.AddressProvider">
+        <bean id="helloWorldAddressProvider" class="example.foundation.servicediscovery.support.AddressProvider">
             <property name="serviceName" value="test_service"/>
         </bean>
         <bean id="logInbound" class="org.apache.cxf.interceptor.LoggingInInterceptor" />

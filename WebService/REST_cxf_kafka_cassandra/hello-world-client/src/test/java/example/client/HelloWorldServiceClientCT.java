@@ -36,6 +36,7 @@ public class HelloWorldServiceClientCT {
     private static HelloWorldServiceClient client;
     private static HelloWorldService helloWorldService;
     private static ConfigurationService configurationService;
+    private static volatile int times = 0;
 
     @BeforeClass
     public static void beforeClass() {
@@ -87,16 +88,17 @@ public class HelloWorldServiceClientCT {
         helloWorld.setExtension("v_str", "");
 
         client.getHelloWorldService().sayHello(helloWorld);
-        verify(helloWorldService, times(1)).sayHello(any(HelloWorld.class));
+        times++;
+        verify(helloWorldService, times(times)).sayHello(any(HelloWorld.class));
     }
 
     @Test
-    public void testRbaServiceNotInvolved() {
+    public void testHelloWorldServiceNotInvolved() {
         when(configurationService.getBoolean(eq(TestConstants.HELLOWORLD_CLIENT_ENABLED), anyBoolean())).thenReturn(false);
 
         HelloWorld helloWorld = new HelloWorld();
 
         client.getHelloWorldService().sayHello(helloWorld);
-        verify(helloWorldService, times(0)).sayHello(any(HelloWorld.class));
+        verify(helloWorldService, times(times)).sayHello(any(HelloWorld.class));
     }
 }

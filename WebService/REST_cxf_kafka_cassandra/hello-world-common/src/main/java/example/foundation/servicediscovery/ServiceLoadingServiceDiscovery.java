@@ -26,6 +26,8 @@ public class ServiceLoadingServiceDiscovery implements ServiceDiscovery {
     /**
      * Instantiates a new static linked messaging discovery.
      */
+    //一个服务(service)通常指的是已知的接口或者抽象类，服务提供方就是对这个接口或者抽象类的实现，然后按spi标准存放到资源路径META-INF/services目录下，文件的命名为该服务接口的全限定名。
+    //如有一个服务接口com.test.Service，其服务实现类为com.test.ChildService，那此时需要在META-INF/services中放置文件com.test.Service，其中的内容就为该实现类的全限定名com.test.ChildService，有多个服务实现，每一行写一个服务实现，#后面的内容为注释，并且该文件只能够是以UTF-8编码
     public ServiceLoadingServiceDiscovery() {
         itsLoader = ServiceLoader.load(ServiceFactory.class, this.getClass().getClassLoader());
     }
@@ -38,13 +40,6 @@ public class ServiceLoadingServiceDiscovery implements ServiceDiscovery {
         itsLoader = ServiceLoader.load(ServiceFactory.class, classloader);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.ericsson.jee.ngin.messaging.adapter.MessagingDiscovery#
-     * discover(java. lang.Class, java.util.Map)
-     */
     @Override
     public <T> T discover(Class<T> serviceClass, Map<String, String> critera, Map<String, Object> config) {
         T result = null;
