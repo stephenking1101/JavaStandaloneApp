@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-import example.foundation.servicediscovery.ConfigurationException;
-import example.foundation.servicediscovery.NoServiceException;
-import example.foundation.servicediscovery.Service;
-import example.foundation.servicediscovery.support.ServiceHelper;
+import example.foundation.servicediscovery.support.util.ConfigurationException;
+import example.foundation.servicediscovery.support.util.NoServiceException;
+import example.foundation.servicediscovery.support.util.Service;
+import example.foundation.servicediscovery.support.util.ServiceHelper;
 
 class AddressCache {
     private final HashMap<String, ArrayList<Service>> allServices = 

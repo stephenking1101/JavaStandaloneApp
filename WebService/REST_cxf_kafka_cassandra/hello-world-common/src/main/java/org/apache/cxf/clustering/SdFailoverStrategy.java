@@ -1,10 +1,13 @@
-package example.foundation.servicediscovery.support;
+package org.apache.cxf.clustering;
 
 import java.util.List;
 
 import org.apache.cxf.clustering.FailoverStrategy;
 import org.apache.cxf.endpoint.Endpoint;
 import org.apache.cxf.message.Exchange;
+
+import example.foundation.servicediscovery.support.AddressSelectStrategy;
+import example.foundation.servicediscovery.support.RandomStrategy;
 
 public class SdFailoverStrategy implements FailoverStrategy{
     private AddressSelectStrategy failoverAddressSelectStrategy = new RandomStrategy();

@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import example.foundation.servicediscovery.Service;
-import example.foundation.servicediscovery.Service.STATUS;
+import example.foundation.servicediscovery.support.util.Service.STATUS;
 import example.foundation.servicediscovery.support.ServiceAddressFinder;
-import example.foundation.servicediscovery.support.ServiceHelper;
+import example.foundation.servicediscovery.support.util.Service;
+import example.foundation.servicediscovery.support.util.ServiceHelper;
 
 public class InMemoryAddressFinder implements ServiceAddressFinder {    
     private AddressCache sd = new AddressCache();

@@ -1,8 +1,6 @@
-package example.foundation.servicediscovery.support;
+package example.foundation.servicediscovery.support.util;
 
 import org.apache.cxf.common.util.StringUtils;
-
-import example.foundation.servicediscovery.Service;
 
 public class ServiceHelper {
     public static final String SERVICE_URI_PROPERTY_NAME = "service_uri";

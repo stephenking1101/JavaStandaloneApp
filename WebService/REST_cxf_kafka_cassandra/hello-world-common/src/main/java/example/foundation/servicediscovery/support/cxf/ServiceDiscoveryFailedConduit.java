@@ -1,4 +1,4 @@
-package example.foundation.servicediscovery.support;
+package example.foundation.servicediscovery.support.cxf;
 
 import org.apache.cxf.message.Message;
 import org.apache.cxf.transport.Conduit;

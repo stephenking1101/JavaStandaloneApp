@@ -1,4 +1,4 @@
-package example.foundation.servicediscovery;
+package example.foundation.servicediscovery.support.util;
 
 import java.util.HashMap;
 

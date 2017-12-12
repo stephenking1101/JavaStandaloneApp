@@ -12,11 +12,10 @@ import org.apache.cxf.message.Exchange;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.transport.Conduit;
 
-import example.foundation.servicediscovery.ConfigurationException;
-import example.foundation.servicediscovery.NoServiceException;
 import example.foundation.servicediscovery.support.AddressProvider;
-import example.foundation.servicediscovery.support.SdFailoverStrategy;
-import example.foundation.servicediscovery.support.ServiceDiscoveryFailedConduit;
+import example.foundation.servicediscovery.support.cxf.ServiceDiscoveryFailedConduit;
+import example.foundation.servicediscovery.support.util.ConfigurationException;
+import example.foundation.servicediscovery.support.util.NoServiceException;
 
 public class SdLbsTargetSelector extends FailoverTargetSelector {
     private static final Logger LOG =

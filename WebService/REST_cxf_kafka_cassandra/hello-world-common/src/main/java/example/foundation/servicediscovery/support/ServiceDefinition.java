@@ -12,6 +12,7 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
+import example.foundation.servicediscovery.support.util.ServiceHelper;
 import example.util.JacksonMapConvertor;
 
 public class ServiceDefinition {

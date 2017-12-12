@@ -2,11 +2,11 @@ package example.foundation.servicediscovery.support.test;
 
 import java.util.List;
 
-import example.foundation.servicediscovery.Service;
 import example.foundation.servicediscovery.ServiceDiscoveryFactory;
 import example.foundation.servicediscovery.support.AddressProvider;
 import example.foundation.servicediscovery.support.ServiceAddressFinder;
 import example.foundation.servicediscovery.support.ServiceDefinition;
+import example.foundation.servicediscovery.support.util.Service;
 
 public class SDMocker {
     public static final MockedService Test_Service;

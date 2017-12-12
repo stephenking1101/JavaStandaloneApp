@@ -1,4 +1,4 @@
-package example.foundation.servicediscovery;
+package example.foundation.servicediscovery.support.util;
 
 public class NoServiceException  extends  RuntimeException{
     private String serviceName;

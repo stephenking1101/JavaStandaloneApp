@@ -1,4 +1,4 @@
-package example.foundation.servicediscovery.support;
+package example.foundation.servicediscovery.support.util;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import example.foundation.servicediscovery.ServiceDiscoveryFactory;
+import example.foundation.servicediscovery.support.ClusterDeployment;
+import example.foundation.servicediscovery.support.Node;
 
 public abstract class LocalAddressHelper {
     private static final Logger logger = LoggerFactory.getLogger(LocalAddressHelper.class);
