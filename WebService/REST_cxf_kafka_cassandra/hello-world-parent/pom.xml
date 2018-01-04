@@ -19,9 +19,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  
 		<repo-internal-version>master-SNAPSHOT</repo-internal-version>
 		<kafka.version>1.0.0</kafka.version>
-		<spring-kafka-test.version>2.1.0.RC1</spring-kafka-test.version>
-		<spring-kafka.version>2.1.0.RC1</spring-kafka.version>
-		<spring.version>5.0.1.RELEASE</spring.version>
+		<spring-kafka-test.version>2.1.0.RELEASE</spring-kafka-test.version>
+		<spring-kafka.version>2.1.0.RELEASE</spring-kafka.version>
+		<spring.version>5.0.2.RELEASE</spring.version>
 		<cxf.version>3.2.1</cxf.version>
 		<dockerfile.dir>${project.build.directory}/docker-build</dockerfile.dir>
     </properties>

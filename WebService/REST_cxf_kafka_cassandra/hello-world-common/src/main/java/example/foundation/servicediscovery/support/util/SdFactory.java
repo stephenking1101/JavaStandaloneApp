@@ -89,6 +89,7 @@ public class SdFactory {
     }
 
     public static void main(String[] args) throws InterruptedException {
+    	//System.setProperty("HELLO_WORLD_SERVICE", "http://127.0.0.1:8080/hello-world-war");
         Thread.sleep(3000);
         for (String key: SdLbsPropertyConfig.configedLbsCache.keySet()){
             String name = key.toLowerCase();
