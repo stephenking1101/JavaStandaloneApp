@@ -1,6 +1,24 @@
 # RESTful Service with Kafka and CXF
 
-## Involve the client
+## Service - hello-world-war
+
+Contains main logic of the service
+
+Health check path: http://127.0.0.1:8080/hello-world-war/healthcheck is defined in web.xml
+
+## API definition - hello-world-api
+
+Contiains the RESTful API definition for the service
+
+## DB access - hello-world-store-cass
+
+Contains the database access methods
+
+Table definition is in create-table.cql
+
+## Http client project - hello-world-cient
+
+* How to involve the client to access the service
 
 ```
 public class App 
@@ -24,3 +42,11 @@ public class App
     }
 }
 ```
+
+## hello-world-parent contains the dependency definition
+
+## hello-world-ft is for end-to-end function test for the service
+
+## hello-world-docker to is package the service into a docker image
+
+## hello-world-common contains the service discovery logic and DB access utils
