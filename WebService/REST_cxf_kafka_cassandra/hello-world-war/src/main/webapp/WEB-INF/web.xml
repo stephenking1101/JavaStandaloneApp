@@ -27,5 +27,15 @@
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
 
+    <!-- HealthCheck -->
+    <servlet>
+        <servlet-name>healthCheck</servlet-name>
+        <servlet-class>example.common.healthcheck.HealthCheckServlet</servlet-class>
+        <load-on-startup>99</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>healthCheck</servlet-name>
+        <url-pattern>/healthcheck</url-pattern>
+    </servlet-mapping>
 
 </web-app>

@@ -23,11 +23,15 @@ public class HelloWorldConsumer {
 
     @KafkaListener(id="save-to-cass", topics=HelloWorldConstants.KAFKA_TOPIC_HELLO_WORLD)
     public void save(HelloWorld helloWorld, Acknowledgment ack){
-    	//containerProperties.setAckMode(AckMode.MANUAL);
-        logger.debug("save to cassandra {}", helloWorld);
-        helloWorldDao.create(helloWorld);
-        //commit the offset
-        ack.acknowledge();
+    	try {
+	    	//containerProperties.setAckMode(AckMode.MANUAL);
+	        logger.debug("save to cassandra {}", helloWorld);
+	        helloWorldDao.create(helloWorld);
+	        //commit the offset
+	        ack.acknowledge();
+    	} catch (Throwable e){
+            logger.error("Error when saving the message", e);
+        }
     }
 
     @Autowired
