@@ -52,7 +52,7 @@ public class SdLbsTargetSelector extends FailoverTargetSelector {
 
     
     /**
-     * User VnfsdFailoverStrategy Strategy instead default one. 
+     * Use VnfsdFailoverStrategy Strategy instead default one. 
      */
     protected Endpoint getFailoverTarget(Exchange exchange,
                                        InvocationContext invocation) {
