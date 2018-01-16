@@ -1,0 +1,37 @@
+EXAMPLE-SINGLE :
+    -  node-1 :
+        -  EXAMPLE-SINGLE-1 :
+            Address:  192.168.137.186
+            Port:  1
+            Status:  passing
+        -  EXAMPLE-SINGLE-2 :
+            Address:  192.168.137.186
+            Port:  2
+            Status:  passing
+    -  node-2 :
+        -  EXAMPLE-SINGLE :
+            Address:  192.168.137.187
+            Port:  0
+            Status:  critical
+
+example_service :
+    -  node-1 :
+        -  example_service :
+            Address:  1.1.1.1
+            Port:  27020
+            Status:  passing
+
+iam_idm :
+    -  node-1 :
+        -  iam_idm-1 :
+            Address:  192.168.137.186
+            Port:  27020
+            Status:  critical
+        -  iam_idm-2 :
+            Address:  192.168.137.186
+            Port:  27021
+            Status:  warning
+        -  iam_idm-3 :
+            Address:  192.168.137.186
+            Port:  27022
+            Status:  unknown

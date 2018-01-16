@@ -15,12 +15,8 @@ public class HelloWorldProducer {
 	private KafkaTemplate<String, HelloWorld> kafkaTemplate;
 
 	public void send(HelloWorld helloWorld){
-		try{
-	        logger.debug("send to kafka{}", helloWorld);
-	        kafkaTemplate.send(HelloWorldConstants.KAFKA_TOPIC_HELLO_WORLD, helloWorld.getUserName(), helloWorld);
-		} catch (Throwable e) {
-            logger.error("Error when sending the message", e);
-        }
+		logger.debug("send to kafka{}", helloWorld);
+	    kafkaTemplate.send(HelloWorldConstants.KAFKA_TOPIC_HELLO_WORLD, helloWorld.getUserName(), helloWorld);
     }
 	
 	@Autowired

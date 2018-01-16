@@ -157,7 +157,17 @@
 	            <artifactId>hello-world-common</artifactId>
 	            <version>${repo-internal-version}</version>
 	        </dependency>
+	        <dependency>
+	            <groupId>com.example</groupId>
+	            <artifactId>sd-backend-localfile-impl</artifactId>
+	            <version>${repo-internal-version}</version>
+	        </dependency>
             <!--repo internal ends-->
+            <dependency>
+			    <groupId>com.netflix.hystrix</groupId>
+			    <artifactId>hystrix-core</artifactId>
+			    <version>1.5.12</version>
+			</dependency>
             <dependency>
 			   <groupId>org.apache.cxf</groupId>
 			   <artifactId>cxf-rt-frontend-jaxrs</artifactId>

@@ -19,7 +19,9 @@ import example.service.payload.HelloWorld;
 
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class HelloWorldServiceClientCT {
     private static Logger logger = LoggerFactory.getLogger(HelloWorldServiceClientCT.class);
 
@@ -99,6 +102,21 @@ public class HelloWorldServiceClientCT {
         HelloWorld helloWorld = new HelloWorld();
 
         client.getHelloWorldService().sayHello(helloWorld);
+        verify(helloWorldService, times(times)).sayHello(any(HelloWorld.class));
+    }
+    
+    @Test
+    public void testHelloWorldCommand() {
+        when(configurationService.getBoolean(eq(TestConstants.HELLOWORLD_CLIENT_ENABLED), anyBoolean())).thenReturn(true);
+
+        HelloWorld helloWorld = new HelloWorld();
+
+        //Asynchronous involve
+        //new HelloWorldCommand(helloWorld).queue();
+        
+        //Synchronous involve
+        new HelloWorldCommand(helloWorld).execute();
+        times++;
         verify(helloWorldService, times(times)).sayHello(any(HelloWorld.class));
     }
 }

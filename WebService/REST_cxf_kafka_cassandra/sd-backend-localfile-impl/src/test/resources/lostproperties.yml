@@ -1,0 +1,23 @@
+example_service :
+    -  node-1 :
+        -  example_service :
+            Address:  192.168.137.186
+            Port:  27020
+            Status:  passing
+EXAMPLE-SINGLE :
+    -  node-1 :
+        -  EXAMPLE-SINGLE-1 :
+            Port:  1
+            Status:  passing
+        -  EXAMPLE-SINGLE-2 :
+            Address:  192.168.137.186
+            Status:  passing
+    -  node-2 :
+        -  EXAMPLE-SINGLE :
+            Address:  192.168.137.187
+            Port:  0
+    -  node-3 :
+        -  EXAMPLE-SINGLE :
+    -  node-4 :
+
+EXAMPLE-SINGLE-2 :

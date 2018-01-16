@@ -1,0 +1,5 @@
+example_service: -  node-1 :
+        -  example_service :
+            Address:  192.168.137.186
+            Port:  27020
+            Status:  passing
