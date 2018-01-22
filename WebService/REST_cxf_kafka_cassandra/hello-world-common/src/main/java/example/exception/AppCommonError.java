@@ -15,38 +15,38 @@ import com.fasterxml.jackson.annotation.JsonGetter;
  * The error includes error code, error description and extension
  * information.
  * 
- * @see AACommonErrorEnum
+ * @see AppCommonErrorEnum
  * 
  */
-public class AACommonError implements Serializable {
+public class AppCommonError implements Serializable {
 
     private static final long serialVersionUID = -351614323035642044L;
 
-    @XmlElement(name = AACommonConstants.ERROR_FIELD_ERROR)
+    @XmlElement(name = AppCommonConstants.ERROR_FIELD_ERROR)
     private String error;
-    @XmlElement(name = AACommonConstants.ERROR_FIELD_ERROR_DESC)
+    @XmlElement(name = AppCommonConstants.ERROR_FIELD_ERROR_DESC)
     private String errorDescription;
     private Map<String, Object> extensions;
 
-    public AACommonError() {
+    public AppCommonError() {
     }
 
-    public AACommonError(String error) {
+    public AppCommonError(String error) {
         this.error = error;
     }
 
-    public AACommonError(String error, String descr) {
+    public AppCommonError(String error, String descr) {
         this.error = error;
         this.errorDescription = descr;
     }
 
-    public AACommonError(String error, String descr, Map<String, Object> extensions) {
+    public AppCommonError(String error, String descr, Map<String, Object> extensions) {
         this.error = error;
         this.errorDescription = descr;
         this.extensions = extensions;
     }
 
-    @JsonGetter(value = AACommonConstants.ERROR_FIELD_ERROR)
+    @JsonGetter(value = AppCommonConstants.ERROR_FIELD_ERROR)
     public String getError() {
         return error;
     }
@@ -55,7 +55,7 @@ public class AACommonError implements Serializable {
         this.error = error;
     }
 
-    @JsonGetter(value = AACommonConstants.ERROR_FIELD_ERROR_DESC)
+    @JsonGetter(value = AppCommonConstants.ERROR_FIELD_ERROR_DESC)
     public String getErrorDescription() {
         return errorDescription;
     }

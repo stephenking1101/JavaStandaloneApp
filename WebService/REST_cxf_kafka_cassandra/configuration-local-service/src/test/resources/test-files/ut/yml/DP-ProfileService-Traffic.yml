@@ -1,0 +1,21 @@
+#2015-11-18T10:03:29Z
+
+#authentication config1
+iam.authentication.config1: value1
+
+iam.authentication.config2: 1001
+
+iam.authentication.config3: '1001'
+
+iam.authentication.configFuzzyTest1: valueFuzzyTest1
+
+iam.authentication.configFuzzyTest2: valueFuzzyTest2
+
+iam.authentication.configfuzzytest3: valueFuzzyTest3
+
+iam.authentication.configFuzzy_Test4: valueFuzzyTest4
+
+#abc
+iam.userprofile.config1:
+    value: value41
+    type: java.lang.String

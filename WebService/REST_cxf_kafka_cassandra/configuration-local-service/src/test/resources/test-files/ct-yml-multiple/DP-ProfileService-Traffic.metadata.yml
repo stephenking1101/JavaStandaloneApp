@@ -1,0 +1,24 @@
+
+#DP-ProfileService-Traffic:
+metadata:
+  iam.authentication.config1:
+    type: java.lang.String
+    description: ProfileService Config1
+    defaultValue: defaultValue1
+  iam.authentication.config2:
+    type: java.lang.Integer
+    description: ProfileService Config2
+    defaultValue: 1
+  iam.authentication.config3:
+    type: java.lang.Integer
+    description: ProfileService Config3
+    defaultValue: 1
+  iam.authentication.configInFile2:
+    type: java.lang.String
+    description: ProfileService ConfigInFile2
+    defaultValue: defaultValue1
+  iam.authentication.configInBothFiles:
+    type: java.lang.String
+    description: ProfileService configInBothFiles
+    defaultValue: ProfileServiceYMLValue
+

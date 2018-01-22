@@ -9,12 +9,12 @@ import javax.ws.rs.ext.Provider;
 import org.slf4j.Logger;
 
 @Provider
-public class AACommonExceptionMapper implements ExceptionMapper<AACommonException> {
+public class AppCommonExceptionMapper implements ExceptionMapper<AppCommonException> {
 
     private Logger logger;
 
     @Override
-    public Response toResponse(AACommonException e) {
+    public Response toResponse(AppCommonException e) {
         if (e.getHttpStatus() >= Status.INTERNAL_SERVER_ERROR.getStatusCode()) {
             logger.error(e.getMessage(), e);
         } else {

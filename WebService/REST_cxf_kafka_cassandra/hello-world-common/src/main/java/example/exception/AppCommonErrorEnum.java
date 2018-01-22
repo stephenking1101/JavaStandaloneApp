@@ -1,6 +1,6 @@
 package example.exception;
 
-public enum AACommonErrorEnum {
+public enum AppCommonErrorEnum {
 	INTERNAL_SERVER_ERROR("INTERNAL_SERVER_ERROR"),
     TEMP_SERVICE_UNAVAILABLE("TEMP_SERVICE_UNAVAILABLE"),
 
@@ -159,7 +159,7 @@ public enum AACommonErrorEnum {
 
     private String errorCode;
 
-    private AACommonErrorEnum(String errorCode) {
+    private AppCommonErrorEnum(String errorCode) {
         this.errorCode = errorCode;
     }
 

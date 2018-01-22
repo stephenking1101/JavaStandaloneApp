@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+
+
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd"
+       default-lazy-init="true">
+
+    <context:annotation-config/>
+
+    <!--
+    <context:component-scan base-package="example.configurationservice.local" />
+    -->
+
+    <!-- Metadata -->
+
+    <!-- file locator -->
+
+
+    <!-- TODO remove redundant path  -->
+    <bean id="metadataFileLocatorByDpName"
+          class="example.configurationservice.local.locator.impl.SimpleFileLocator">
+
+        <constructor-arg index="0">
+            <list>
+                <!-- In case there are duplicated configuration, the earlier one (DP config) will be used. -->
+                <value>
+                    file:#{ systemProperties['service.base.dir'] ?: '/etc/modules'}/#{ systemProperties['dp.name'] }/config/*.metadata.yml
+                </value>
+                <value>
+                    #{systemProperties['use.shared.cm'] == 'false' ? null:
+                    'file:' + (systemProperties['service.base.dir']?:'/etc/modules') + '/foundation-shared/config/*.metadata.yml'}
+                </value>
+            </list>
+        </constructor-arg>
+    </bean>
+    <bean id="configurationMetadataYamlRepository"
+          class="example.configurationservice.local.metadata.impl.ConfigurationMetadataYamlRepository"
+          init-method="startMonitor" destroy-method="stopMonitor">
+        <constructor-arg index="0">
+            <ref bean="metadataFileLocatorByDpName"/>
+        </constructor-arg>
+    </bean>
+
+    <!-- Configuration DAO -->
+
+    <!-- file locator -->
+
+    <bean id="configFileLocatorByFinalLocationSpecifiedInFile"
+          class="example.configurationservice.local.locator.impl.SpecifiedByApplicationFileLocator">
+    </bean>
+
+    <!-- TODO remove redundant path after FT -->
+    <bean id="configFileLocatorByDpName"
+          class="example.configurationservice.local.locator.impl.SimpleFileLocator">
+        <constructor-arg index="0">
+            <list>
+                <!-- In case there are duplicated configuration, the earlier one (DP config) will be used. -->
+                <value>
+                    file:#{ systemProperties['service.base.dir'] ?: '/etc/modules'}/#{ systemProperties['dp.name'] }/config/*.config.yml
+                </value>
+                <value>
+                    #{systemProperties['use.shared.cm'] == 'false' ? null:
+                    'file:' + (systemProperties['service.base.dir']?:'/etc/modules') + '/foundation-shared/config/*.config.yml'}
+                </value>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="monitorableRepositoryImpl"
+          class="example.configurationservice.local.dao.impl.yaml.LocalYamlConfigurationDaoImpl"
+          init-method="startMonitor" destroy-method="stopMonitor">
+        <constructor-arg index="0">
+            <ref bean="configFileLocatorByDpName"/>
+        </constructor-arg>
+        <constructor-arg index="1">
+            <ref bean="configurationMetadataYamlRepository"/>
+        </constructor-arg>
+    </bean>
+    
+
+    <bean id="localPropertiesConfigurationDao"
+          class="example.configurationservice.local.dao.impl.properties.LocalPropertiesConfigurationDaoImpl"
+          init-method="startMonitor" destroy-method="stopMonitor">
+        <constructor-arg index="0">
+            <ref bean="configFileLocatorByDpName"/>
+        </constructor-arg>
+        <constructor-arg index="1">
+            <ref bean="configurationMetadataYamlRepository"/>
+        </constructor-arg>
+    </bean>
+
+    <bean id="configurationServiceImpl"
+          class="example.configurationservice.local.impl.ConfigurationLocalServiceImpl">
+        <property name="configurationDao">
+            <ref bean="monitorableRepositoryImpl"/>
+        </property>
+    </bean>
+
+    <bean id="springContextUtil"
+          class="example.configurationservice.local.util.SpringContextUtil"
+          lazy-init="false"/>
+
+    <beans profile="dev, ct-yml">
+
+        <bean id="metadataFileLocatorByDpName"
+              class="example.configurationservice.local.locator.impl.SimpleFileLocator">
+            <constructor-arg index="0"
+                             value="file:src/test/resources/test-files/ct/metadata/#{ systemProperties['dp.name'] }.metadata.yml"/>
+        </bean>
+
+        <bean id="configFileLocatorByDpName"
+              class="example.configurationservice.local.locator.impl.SimpleFileLocator">
+            <constructor-arg index="0"
+                             value="file:src/test/resources/test-area/etc/modules/#{ systemProperties['dp.name'] }/#{ systemProperties['dp.name'] }.yml"/>
+        </bean>
+    </beans>
+
+    <beans profile="dev, ct-yml-multiple">
+
+        <bean id="metadataFileLocatorByDpName"
+              class="example.configurationservice.local.locator.impl.SimpleFileLocator">
+            <constructor-arg index="0">
+                <list>
+                    <value>
+                        file:src/test/resources/test-area/etc/modules/#{ systemProperties['dp.name'] }/*.metadata.yml
+                    </value>
+                </list>
+            </constructor-arg>
+        </bean>
+
+        <bean id="configFileLocatorByDpName"
+              class="example.configurationservice.local.locator.impl.SimpleFileLocator">
+            <constructor-arg index="0">
+                <list>
+                    <value>
+                        file:src/test/resources/test-area/etc/modules/#{ systemProperties['dp.name'] }/#{ systemProperties['dp.name'] }.yml
+                    </value>
+                    <value>
+                        file:src/test/resources/test-area/etc/modules/#{ systemProperties['dp.name'] }/foundation.config.yml
+                    </value>
+                </list>
+            </constructor-arg>
+        </bean>
+    </beans>
+
+    <beans profile="dev, ct-properties">
+        <bean id="configurationServiceImpl"
+              class="example.configurationservice.local.impl.ConfigurationLocalServiceImpl">
+            <property name="configurationDao">
+                <ref bean="localPropertiesConfigurationDao"/>
+            </property>
+        </bean>
+
+        <bean id="metadataFileLocatorByDpName"
+              class="example.configurationservice.local.locator.impl.SimpleFileLocator">
+            <constructor-arg index="0"
+                             value="file:src/test/resources/test-files/ct/metadata/#{ systemProperties['dp.name'] }.metadata.yml"/>
+        </bean>
+
+        <bean id="configFileLocatorByDpName"
+              class="example.configurationservice.local.locator.impl.SimpleFileLocator">
+            <constructor-arg index="0"
+                             value="file:src/test/resources/test-area/etc/modules/#{ systemProperties['dp.name'] }/#{ systemProperties['dp.name'] }.properties"/>
+        </bean>
+
+    </beans>
+
+
+</beans>

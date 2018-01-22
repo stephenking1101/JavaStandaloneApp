@@ -1,6 +1,6 @@
 package example.exception;
 
-public class AACommonConstants {
+public class AppCommonConstants {
 
     public static int SECONDS_PER_HOUR = 3600;
     public static long MILLISECONDS_PER_SECOND = 1000L;

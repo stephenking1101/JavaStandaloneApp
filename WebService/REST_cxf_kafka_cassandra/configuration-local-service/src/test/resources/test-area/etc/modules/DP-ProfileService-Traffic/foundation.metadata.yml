@@ -1,0 +1,257 @@
+metadata:
+  facility.integration.willBeDeleted:
+    type: java.lang.String
+    description: test for delete
+    defaultValue:
+  facility.logger.log4j.source.configuration.file: 
+    type: java.lang.String
+    description: log4j config file
+    defaultValue: 
+  facility.loggerService.configuration.uri: 
+    type: java.lang.String
+    description: loggerService config uri
+    defaultValue: 
+  facility.statistics.logger.enabled: 
+    type: java.lang.Boolean
+    description: Specifies if statistics logger is enabled
+    defaultValue: 
+  facility.throttling.isLocalPeriodCounter: 
+    type: java.lang.Boolean
+    description: the flag to indicate LocalPeriodCounter or GlobalPeriodCounter
+    defaultValue: 
+  service.redis.host: 
+    type: java.lang.String
+    description: The redis sentinel host address, could be a list
+    defaultValue: 
+  service.redis.password: 
+    type: java.lang.String
+    description: The redis password
+    defaultValue: 
+  service.redis.port: 
+    type: java.lang.Integer
+    description: The sentinel redis port number
+    defaultValue: 
+  service.redis.timeout: 
+    type: java.lang.Integer
+    description: The redis idle connection timeout value
+    defaultValue: 
+  service.redis.maxActive: 
+    type: java.lang.Integer
+    description: The max active connection number in redis connection pool
+    defaultValue: 
+  service.redis.maxIdle: 
+    type: java.lang.Integer
+    description: The max idle connection number in redis connection pool
+    defaultValue: 
+  service.redis.master: 
+    type: java.lang.String
+    description: The redis master key for timer in redis sentinel
+    defaultValue: 
+  facility.alarmfw.esa.port: 
+    type: java.lang.String
+    description: The RMI port of ESA used in the AlarmFw package
+    defaultValue: 
+  facility.alarmfw.esa.host: 
+    type: java.lang.String
+    description: The name/ip address of the machine where ESA is running used in the AlarmFw package
+    defaultValue: 
+  facility.alarmfw.sig.resourceid.prefix: 
+    type: java.lang.String
+    description: The resourceId prefix identifying alarms from SIG, used in the AlarmFw package
+    defaultValue: 
+  facility.alarmfw.originating.source.ip: 
+    type: java.lang.String
+    description: The originating source ip where raise or clear alarm
+    defaultValue: 
+  facility.relayfw.relay.enabled: 
+    type: java.lang.Boolean
+    description: Specifies the relay is enabled
+    defaultValue: 
+  facility.relayfw.relay.order: 
+    type: java.lang.String
+    description: The Common Relay Order
+    defaultValue: 
+  system.ip.configuration.folder: 
+    type: java.lang.String
+    description: The folder to place ip configuration file.
+    defaultValue: 
+  system.ipadapter.configuration.folder: 
+    type: java.lang.String
+    description: The folder to place ip adapters configuration file.
+    defaultValue: 
+  traffic.cluster.name: 
+    type: java.lang.String
+    description: Name of traffic cluster
+    defaultValue: 
+  das.host: 
+    type: java.lang.String
+    description: the domain admin server host name or IP address
+    defaultValue: 
+  das.port: 
+    type: java.lang.Integer
+    description: the domain admin server listening port
+    defaultValue: 
+  das.username: 
+    type: java.lang.String
+    description: the user name of credential needed when connect to domain admin server via JMX connection
+    defaultValue: 
+  das.password: 
+    type: java.lang.String
+    description: the password of credential needed when connect to domain admin server via JMX connection
+    defaultValue: 
+  traffic.rmi.protocol: 
+    type: java.lang.String
+    description: the protocol for traffic servers rmi remote call
+    defaultValue: 
+  traffic.http.port: 
+    type: java.lang.String
+    description: http port for traffic server
+    defaultValue: 
+  traffic.iiop.port: 
+    type: java.lang.String
+    description: iiop port for traffic server
+    defaultValue: 
+  das.rmi.protocol: 
+    type: java.lang.String
+    description: the protocol for admin server rmi remote call
+    defaultValue: 
+  exposure.service.public.address: 
+    type: java.lang.String
+    description: the public address for service exposure api
+    defaultValue: 
+  facility.foundation.service.internal.url: 
+    type: java.lang.String
+    description: the url for foundation service internal url
+    defaultValue: 
+  facility.oauth.service.base.url: 
+    type: java.lang.String
+    description: the url for oauth service base url
+    defaultValue: 
+  facility.exposure.service.base.url: 
+    type: java.lang.String
+    description: the url for exposure service base url
+    defaultValue: 
+  facility.exposure.service.internal.url: 
+    type: java.lang.String
+    description: the url for exposure service internal url
+    defaultValue: 
+  facility.remote.statistics.enableCollector: 
+    type: java.lang.Boolean
+    description: the flag to enable or disable the collector
+    defaultValue: 
+  facility.remote.statistics.jndiNameList: 
+    type: java.lang.String
+    description: the jndi name list to collect statistics
+    defaultValue: 
+  facility.license.handlerFactoryJndi: 
+    type: java.lang.String
+    description: JNDI path to License Handler Factory
+    defaultValue: 
+  facility.license.licenseApplicationId: 
+    type: java.lang.String
+    description: the Application ID of exposure used in License Handler Factory
+    defaultValue: 
+  facility.security.oauth_server.url: 
+    type: java.lang.String
+    description: URL for Oauth server
+    defaultValue: 
+  sig.3p.authentication.enabled: 
+    type: java.lang.Boolean
+    description: Decide whether to authenticate 3p applications.
+    defaultValue: 
+  sig.3p.authentication.filter.handler.class.basic: 
+    type: java.lang.String
+    description: Specify the handler implementation class for HTTP Basic filter.
+    defaultValue: 
+  sig.3p.authentication.filter.handler.class.mlp: 
+    type: java.lang.String
+    description: Specify the handler implementation class for MLP filter.
+    defaultValue: 
+  sig.3p.authentication.manager.class: 
+    type: java.lang.String
+    description: Specify the authentication manager implementation class.
+    defaultValue: 
+  sig.3p.authentication.lib.path: 
+    type: java.lang.String
+    description: The third party's lib path for 3p authentication service
+    defaultValue: 
+  sig.3p.authentication.filter.handler.class.smpp: 
+    type: java.lang.String
+    description: Specify the handler implementation class for smpp access filter.
+    defaultValue: 
+  facility.authentication.customizedClientIdPattern: 
+    type: java.lang.String
+    description: Specify the client id pattern. If not set, ECE will use the default pattern. Dont change it unless you had confirmed with PDU.
+    defaultValue: 
+  sig.authentication.authenticator.rest.wholesale: 
+    type: java.lang.String
+    description: Specify the wholesale authenticators and their relationship.
+    defaultValue: 
+  sig.authentication.authenticator.rest.mobile: 
+    type: java.lang.String
+    description: Specify the mobile authenticators and their relationship.
+    defaultValue: 
+  sig.authentication.authenticator.rest.webdesktop: 
+    type: java.lang.String
+    description: Specify the web desktop authenticators and their relationships.
+    defaultValue: 
+  sig.authentication.authenticator.rest.ssocaadapter: 
+    type: java.lang.String
+    description: Specify the webdesktop sso authenticators and their relationships.
+    defaultValue: 
+  sig.authentication.authenticator.rest.idencaadapter: 
+    type: java.lang.String
+    description: Specify the webdesktop identification authenticators and their their relationship.
+    defaultValue: 
+  sig.authentication.authenticator.rest.mobileproxyip: 
+    type: java.lang.String
+    description: Specify the mobile proxy ip range format like 10.22.34.56,10.34.10-23.1-255,.....,if value is null or empty string , all request ip will be passed
+    defaultValue: 
+  sig.authentication.rest.routing.port: 
+    type: java.lang.Integer
+    description: Specify the target port of authentication routing
+    defaultValue: 
+  sig.authentication.rest.mock.user.list: 
+    type: java.lang.String
+    description: Specify valid users of authentication mock service
+    defaultValue: 
+  facility.georedundancy.zoneId.value: 
+    type: java.lang.String
+    description: geo-redundancy zoneId value
+    defaultValue: 
+  facility.event.notification.enable: 
+    type: java.lang.Boolean
+    description: Is the event notification feature enabled
+    defaultValue: 
+  facility.event.notification.sender.list: 
+    type: java.lang.String
+    description: Define the JNDI of senders, use ";" to seperate different senders
+    defaultValue: 
+  facility.event.notification.senderaddress: 
+    type: java.lang.String
+    description: Define default EN sender address for ADC and Location currently, it MUST conform to be numeric, i.e. 10085 by default
+    defaultValue: 
+  facility.integration.restful.retryTimes: 
+    type: java.lang.Integer
+    description: retry times for connect to adapter when integration reftful client connect fail
+    defaultValue: 
+  facility.integration.restful.connectTimeOut: 
+    type: java.lang.Integer
+    description: time out for integration reftful client connect to adapter
+    defaultValue: 
+  facility.dp.exposure.service.port: 
+    type: java.lang.Integer
+    description: Port of exposure deployment profile
+    defaultValue: 
+  task.scheduler.config.dir: 
+    type: java.lang.String
+    description: task scheduler configuration directory
+    defaultValue: 
+  facility.authenticate.service.base.url: 
+    type: java.lang.String
+    description: the url for authenticate service base url
+    defaultValue: 
+  iam.authentication.configInBothFiles:
+    type: java.lang.String
+    description: ProfileService configInBothFiles
+    defaultValue: FoundationYMLValue

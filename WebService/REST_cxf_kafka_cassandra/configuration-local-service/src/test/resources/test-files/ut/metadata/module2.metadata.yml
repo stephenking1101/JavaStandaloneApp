@@ -1,0 +1,20 @@
+
+#DP-Module2-Traffic:
+metadata:
+  module2.config1:
+    type: java.lang.String
+    description: Module2 Config1
+    defaultValue: defaultValue1
+  module2.config2:
+    type: java.lang.Integer
+    description: Module2 Config2
+    defaultValue: 1
+  module2.config3:
+    type: java.lang.Integer
+    description: Module2 Config2
+    defaultValue: 1
+  module2.configInFile2:
+    type: java.lang.String
+    description: Module2 ConfigInFile2
+    defaultValue: defaultValue1
+

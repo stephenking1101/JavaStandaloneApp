@@ -154,10 +154,10 @@ public class ConsulImpl implements Backend {
         URL srvURL = new URL(srvUri.concat(serviceName).concat("?near=_agent"));
         URL healthURL = new URL(healthUri.concat(serviceName).concat("?near=_agent"));
         ArrayList<ConsulService> tmp = (ArrayList<ConsulService>) Util.json2Object(ConsulClient.getServiceList(srvURL),
-                                                                      "com.ericsson.jiagsaw.serivceDiscovery.ConsulService");
+                                                                      "example.serivceDiscovery.backend.ConsulService");
 
         ArrayList<ConsulSrvHealth> tmpStatus = (ArrayList<ConsulSrvHealth>) Util.json2Object(ConsulClient.getServiceList(healthURL),
-                "com.ericsson.jiagsaw.serivceDiscovery.ConsulSrvHealth");
+                "example.serivceDiscovery.backend.ConsulSrvHealth");
 
         ArrayList<Service> result = consulService2Service(tmp, tmpStatus);
 
@@ -215,11 +215,11 @@ public class ConsulImpl implements Backend {
                         URL healthURL = new URL(healthUri.concat(name).concat("?near=_agent"));
                         ArrayList<ConsulService> tmp = (ArrayList<ConsulService>) Util.json2Object(
                                 ConsulClient.getServiceList(srvURL),
-                                "com.ericsson.jiagsaw.serivceDiscovery.ConsulService");
+                                "example.serivceDiscovery.backend.ConsulService");
 
                         ArrayList<ConsulSrvHealth> tmpStatus = (ArrayList<ConsulSrvHealth>) Util.json2Object(
                                 ConsulClient.getServiceList(healthURL),
-                                "com.ericsson.jiagsaw.serivceDiscovery.ConsulSrvHealth");
+                                "example.serivceDiscovery.backend.ConsulSrvHealth");
 
                         ArrayList<Service> tmpRes = consulService2Service(tmp, tmpStatus);
 

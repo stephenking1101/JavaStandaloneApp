@@ -1,0 +1,7 @@
+
+#authentication config1
+iam.authentication.config1: newValue1
+
+iam.authentication.config2: 1001
+
+iam.authentication.config3: '1001'

@@ -132,6 +132,11 @@
 			</dependency>
             <!--repo internal begins-->
             <dependency>
+	            <groupId>com.example</groupId>
+	            <artifactId>configuration-service-api</artifactId>
+	            <version>${repo-internal-version}</version>
+	        </dependency>
+            <dependency>
                 <groupId>com.example</groupId>
                 <artifactId>hello-world-api</artifactId>
                 <version>${repo-internal-version}</version>
@@ -388,6 +393,12 @@
 	            <version>${mockito.version}</version>
 	            <scope>test</scope>
 	        </dependency>
+	        <dependency>
+			    <groupId>org.apache.xbean</groupId>
+			    <artifactId>xbean-spring</artifactId>
+			    <version>4.6</version>
+			    <scope>test</scope>
+			</dependency>
             <!-- test ends -->
         </dependencies>
 	</dependencyManagement>

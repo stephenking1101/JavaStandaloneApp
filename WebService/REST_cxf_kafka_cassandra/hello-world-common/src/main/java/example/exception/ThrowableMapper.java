@@ -14,7 +14,7 @@ public class ThrowableMapper  implements ExceptionMapper<Throwable> {
 	public Response toResponse(Throwable exception) {
 		logger.error(exception.getMessage(), exception);
 
-        AACommonError error = new AACommonError("server_error",
+        AppCommonError error = new AppCommonError("server_error",
                 "Internal server error.");
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON).entity(error).build();
 	}

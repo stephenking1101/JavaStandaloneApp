@@ -2,7 +2,12 @@ package example.service.impl;
 
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.cxf.jaxrs.ext.MessageContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -17,6 +22,8 @@ public class HelloWorldServiceImplTest {
     private HelloWorldServiceImpl helloWorldService;
     @Mock
     private HelloWorldManager helloWorldManager;
+    @Mock
+    private MessageContext messageContext;
 
     @Before
     public void before() {
@@ -33,6 +40,8 @@ public class HelloWorldServiceImplTest {
         helloWorld.setExtension("v_int", 123);
         helloWorld.setExtension("v_bool", true);
         helloWorld.setExtension("v_str", "");
+        
+        when(messageContext.getHttpServletResponse()).thenReturn(mock(HttpServletResponse.class));
         
         helloWorldService.sayHello(helloWorld);
         verify(helloWorldManager).processSayHello(eq(helloWorld));

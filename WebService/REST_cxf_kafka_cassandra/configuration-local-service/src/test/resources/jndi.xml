@@ -1,0 +1,29 @@
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <!-- TODO Jedi Huang : Revert After Prototype -->
+    <bean id="jndi" class="org.apache.xbean.spring.jndi.DefaultContext">
+        <property name="entries">
+            <map>
+                <entry key="jdbc/facility.general.ds">
+                    <bean class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+                        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+                        <property name="url"
+                                  value="jdbc:mysql://localhost:3306/sigdb?useUnicode=true&amp;characterEncoding=utf-8"/>
+                        <property name="username" value="root"/>
+                        <property name="password" value="admin"/>
+                    </bean>
+                </entry>
+                <entry key="jdbc/geored.general.ds">
+                    <bean class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+                        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+                        <property name="url"
+                                  value="jdbc:mysql://localhost:3306/sigdb?useUnicode=true&amp;characterEncoding=utf-8"/>
+                        <property name="username" value="root"/>
+                        <property name="password" value="admin"/>
+                    </bean>
+                </entry>
+            </map>
+        </property>
+    </bean>
+</beans>

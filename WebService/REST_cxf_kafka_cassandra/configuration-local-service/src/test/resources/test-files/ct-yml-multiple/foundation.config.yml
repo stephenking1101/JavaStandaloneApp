@@ -1,0 +1,5 @@
+
+facility.integration.restful.retryTimes: 3
+facility.integration.restful.connectTimeOut: 1000
+facility.integration.willBeDeleted: 'value'
+iam.authentication.configInBothFiles: 'FoundationYMLValue'

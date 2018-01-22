@@ -7,20 +7,20 @@ import java.util.Map;
 
 import org.apache.commons.collections.MapUtils;
 
-public class AACommonException extends RuntimeException {
+public class AppCommonException extends RuntimeException {
 
     private static final long serialVersionUID = 6851143173501965100L;
     private int httpStatus = 400;
 
     /**
-     * please define it in AACommonErrorEnum
+     * please define it in AppCommonErrorEnum
      */
-    private AACommonErrorEnum errorCode;
+    private AppCommonErrorEnum errorCode;
 
     /**
      * the information defined in json error file
      */
-    private AACommonError error;
+    private AppCommonError error;
 
     /**
      * add the extends information
@@ -37,41 +37,41 @@ public class AACommonException extends RuntimeException {
      */
     private String simpleMessage;
 
-    public AACommonException(){
+    public AppCommonException(){
     }
 
-    public AACommonException(AACommonErrorEnum errorCode) {
+    public AppCommonException(AppCommonErrorEnum errorCode) {
         this.errorCode = errorCode;
     }
 
-    public AACommonException(AACommonErrorEnum errorCode, String message) {
+    public AppCommonException(AppCommonErrorEnum errorCode, String message) {
         super(message);
         this.errorCode = errorCode;
     }
 
-    public AACommonException(AACommonErrorEnum errorCode, Throwable e) {
+    public AppCommonException(AppCommonErrorEnum errorCode, Throwable e) {
         super(e);
         this.errorCode = errorCode;
     }
 
-    public AACommonException(AACommonErrorEnum errorCode, Map<String, Object> extendInfo) {
+    public AppCommonException(AppCommonErrorEnum errorCode, Map<String, Object> extendInfo) {
         this.errorCode = errorCode;
         this.extendInfo = extendInfo;
     }
 
-    public AACommonException(AACommonErrorEnum errorCode, int httpStatus) {
+    public AppCommonException(AppCommonErrorEnum errorCode, int httpStatus) {
         this.errorCode = errorCode;
         this.httpStatus = httpStatus;
     }
 
-    public AACommonException(AACommonErrorEnum errorCode, String[] errorDescValueSortArray) {
+    public AppCommonException(AppCommonErrorEnum errorCode, String[] errorDescValueSortArray) {
         this.errorCode = errorCode;
         if (errorDescValueSortArray != null) {
             this.errorDescValueSortArray = Arrays.copyOf(errorDescValueSortArray, errorDescValueSortArray.length);
         }
     }
 
-    public AACommonException(AACommonErrorEnum errorCode, String[] errorDescValueSortArray, int httpStatus) {
+    public AppCommonException(AppCommonErrorEnum errorCode, String[] errorDescValueSortArray, int httpStatus) {
         this.errorCode = errorCode;
         if (errorDescValueSortArray != null) {
             this.errorDescValueSortArray = Arrays.copyOf(errorDescValueSortArray, errorDescValueSortArray.length);
@@ -79,7 +79,7 @@ public class AACommonException extends RuntimeException {
         this.httpStatus = httpStatus;
     }
 
-    public AACommonException(AACommonErrorEnum errorCode, String[] errorDescValueSortArray,
+    public AppCommonException(AppCommonErrorEnum errorCode, String[] errorDescValueSortArray,
             Map<String, Object> extendInfo) {
         this.errorCode = errorCode;
         if (errorDescValueSortArray != null) {
@@ -88,29 +88,29 @@ public class AACommonException extends RuntimeException {
         this.extendInfo = extendInfo;
     }
 
-    public AACommonException(AACommonErrorEnum errorCode, Throwable cause, int statusCode) {
+    public AppCommonException(AppCommonErrorEnum errorCode, Throwable cause, int statusCode) {
         super(cause);
         this.errorCode = errorCode;
         this.httpStatus = statusCode;
     }
 
-    public AACommonException(AACommonErrorEnum errorCode, Throwable cause, String message) {
+    public AppCommonException(AppCommonErrorEnum errorCode, Throwable cause, String message) {
         super(message, cause);
         this.errorCode = errorCode;
     }
 
-    public AACommonException(AACommonError aaCommonError, Throwable cause, String message) {
+    public AppCommonException(AppCommonError AppCommonError, Throwable cause, String message) {
         super(message, cause);
-        this.error = aaCommonError;
+        this.error = AppCommonError;
     }
 
-    public AACommonException(AACommonError aaCommonError, int statusCode, Throwable cause, String message) {
+    public AppCommonException(AppCommonError AppCommonError, int statusCode, Throwable cause, String message) {
         super(message, cause);
-        this.error = aaCommonError;
+        this.error = AppCommonError;
         this.httpStatus = statusCode;
     }
 
-    public AACommonException(AACommonErrorEnum errorCode, String[] errorDescValueSortArray, Throwable cause,
+    public AppCommonException(AppCommonErrorEnum errorCode, String[] errorDescValueSortArray, Throwable cause,
             int statusCode) {
         super(null, cause);
         this.errorCode = errorCode;
@@ -120,30 +120,30 @@ public class AACommonException extends RuntimeException {
         }
     }
 
-    public AACommonError getError() {
+    public AppCommonError getError() {
         if (error == null) {
             Map<String, Object> errorMap = ErrorConfigurationHelper.getError(this.errorCode.getErrorCode());
 
             if (MapUtils.isEmpty(errorMap)) {
-                errorMap = ErrorConfigurationHelper.getError(AACommonErrorEnum.INTERNAL_SERVER_ERROR.getErrorCode());
-                httpStatus = Integer.parseInt(errorMap.get(AACommonConstants.ERROR_FIELD_HTTP_STATUS).toString());
-                errorMap.remove(AACommonConstants.ERROR_FIELD_HTTP_STATUS);
+                errorMap = ErrorConfigurationHelper.getError(AppCommonErrorEnum.INTERNAL_SERVER_ERROR.getErrorCode());
+                httpStatus = Integer.parseInt(errorMap.get(AppCommonConstants.ERROR_FIELD_HTTP_STATUS).toString());
+                errorMap.remove(AppCommonConstants.ERROR_FIELD_HTTP_STATUS);
                 error = buildError(errorMap);
                 return this.error;
             }
 
-            if (errorMap.get(AACommonConstants.ERROR_FIELD_HTTP_STATUS) != null) {
-                httpStatus = Integer.parseInt(errorMap.get(AACommonConstants.ERROR_FIELD_HTTP_STATUS).toString());
-                errorMap.remove(AACommonConstants.ERROR_FIELD_HTTP_STATUS);
+            if (errorMap.get(AppCommonConstants.ERROR_FIELD_HTTP_STATUS) != null) {
+                httpStatus = Integer.parseInt(errorMap.get(AppCommonConstants.ERROR_FIELD_HTTP_STATUS).toString());
+                errorMap.remove(AppCommonConstants.ERROR_FIELD_HTTP_STATUS);
             }
 
-            if ((errorMap.get(AACommonConstants.ERROR_FIELD_ERROR_DESC) != null) && (errorDescValueSortArray != null)) {
-                errorMap.put(AACommonConstants.ERROR_FIELD_ERROR_DESC, MessageFormat.format(
-                        errorMap.get(AACommonConstants.ERROR_FIELD_ERROR_DESC).toString(), errorDescValueSortArray));
+            if ((errorMap.get(AppCommonConstants.ERROR_FIELD_ERROR_DESC) != null) && (errorDescValueSortArray != null)) {
+                errorMap.put(AppCommonConstants.ERROR_FIELD_ERROR_DESC, MessageFormat.format(
+                        errorMap.get(AppCommonConstants.ERROR_FIELD_ERROR_DESC).toString(), errorDescValueSortArray));
             }
             
-            if(errorMap.containsKey(AACommonConstants.MESSAGE_TRANSACTION)){
-                this.setSimpleMessage((String) errorMap.get(AACommonConstants.MESSAGE_TRANSACTION));
+            if(errorMap.containsKey(AppCommonConstants.MESSAGE_TRANSACTION)){
+                this.setSimpleMessage((String) errorMap.get(AppCommonConstants.MESSAGE_TRANSACTION));
             }
             // add extend info
             if (extendInfo != null) {
@@ -159,17 +159,17 @@ public class AACommonException extends RuntimeException {
         return this.error;
     }
 
-    private AACommonError buildError(Map<String, Object> errorMap) {
+    private AppCommonError buildError(Map<String, Object> errorMap) {
         if (MapUtils.isEmpty(errorMap)) {
             return null;
         }
 
-        String errorStr = (String) errorMap.get(AACommonConstants.ERROR_FIELD_ERROR);
-        String errorDesc = (String) errorMap.get(AACommonConstants.ERROR_FIELD_ERROR_DESC);
-        errorMap.remove(AACommonConstants.ERROR_FIELD_ERROR);
-        errorMap.remove(AACommonConstants.ERROR_FIELD_ERROR_DESC);
-        errorMap.remove(AACommonConstants.MESSAGE_TRANSACTION);
-        return new AACommonError(errorStr, errorDesc, errorMap);
+        String errorStr = (String) errorMap.get(AppCommonConstants.ERROR_FIELD_ERROR);
+        String errorDesc = (String) errorMap.get(AppCommonConstants.ERROR_FIELD_ERROR_DESC);
+        errorMap.remove(AppCommonConstants.ERROR_FIELD_ERROR);
+        errorMap.remove(AppCommonConstants.ERROR_FIELD_ERROR_DESC);
+        errorMap.remove(AppCommonConstants.MESSAGE_TRANSACTION);
+        return new AppCommonError(errorStr, errorDesc, errorMap);
     }
 
     @Override
@@ -177,7 +177,7 @@ public class AACommonException extends RuntimeException {
         if (super.getMessage() != null) {
             return super.getMessage();
         }
-        AACommonError err = getError();
+        AppCommonError err = getError();
         if(this.getSimpleMessage()!=null){
             return this.getSimpleMessage();
         }
@@ -185,11 +185,11 @@ public class AACommonException extends RuntimeException {
         return err.getErrorDescription();
     }
 
-    public AACommonErrorEnum getErrorCode() {
+    public AppCommonErrorEnum getErrorCode() {
         return errorCode;
     }
 
-    public void setErrorCode(AACommonErrorEnum errorCode) {
+    public void setErrorCode(AppCommonErrorEnum errorCode) {
         this.errorCode = errorCode;
     }
 
@@ -206,7 +206,7 @@ public class AACommonException extends RuntimeException {
         return errorDescValueSortArray;
     }
 
-    public void setError(AACommonError error) {
+    public void setError(AppCommonError error) {
         this.error = error;
     }
 

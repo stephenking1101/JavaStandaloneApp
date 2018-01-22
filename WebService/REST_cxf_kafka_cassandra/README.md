@@ -43,6 +43,18 @@ public class App
 }
 ```
 
+* How to involve the client with circuit breaker [Hystrix](https://github.com/Netflix/Hystrix/wiki/How-it-Works#CircuitBreaker)
+
+```
+HelloWorld helloWorld = new HelloWorld();
+
+        //Asynchronous involve
+        //new HelloWorldCommand(helloWorld).queue();
+        
+        //Synchronous involve
+        new HelloWorldCommand(helloWorld).execute();
+```
+
 ## hello-world-parent contains the dependency definition
 
 ## hello-world-ft is for end-to-end function test for the service
@@ -54,4 +66,4 @@ public class App
 service discovery过程大致如下       
 1. 查询System.getProperties(), key="XXX_XXX_SERVICE"  
 2. 查询System.getenv() 即环境变量,, key="XXX_XXX_SERVICE"  
-3. 查询"/etc/modules/service-disc/config/sd_service_sync.yml”(consul中service同步文件，路径可配）， key="xxx-xxx"  
+3. 查询"/etc/modules/service-disc/config/sd_service_sync.yml”(consul中service同步文件，路径可配）， key="xxx-xxx"  (在sd-backend-localfile-impl project 实现, sd-backend-consul-impl为利用consul服务发现的实现)

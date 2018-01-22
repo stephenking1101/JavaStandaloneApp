@@ -16,7 +16,7 @@ import com.google.common.collect.Maps;
 import example.util.JacksonMapConvertor;
 
 public class ErrorConfigurationHelper {
-	private static Logger logger = LoggerFactory.getLogger(AACommonConstants.COMMON_LOGGER_NAME);
+	private static Logger logger = LoggerFactory.getLogger(AppCommonConstants.COMMON_LOGGER_NAME);
 
     private static String filePath = "classpath:aa_error_config.json";
 

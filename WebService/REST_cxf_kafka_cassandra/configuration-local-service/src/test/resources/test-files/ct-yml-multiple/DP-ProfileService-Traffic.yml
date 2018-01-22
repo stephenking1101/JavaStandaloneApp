@@ -1,0 +1,11 @@
+
+#authentication config1
+iam.authentication.config1: value1
+
+iam.authentication.config2: 1001
+
+iam.authentication.config3: '1001'
+
+iam.authentication.configWillBeDelete: 'value'
+
+iam.authentication.configInBothFiles: 'ProfileServiceYMLValue'

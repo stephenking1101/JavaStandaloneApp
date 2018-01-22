@@ -1,0 +1,3 @@
+
+facility.integration.restful.retryTimes: 5
+facility.integration.restful.connectTimeOut: 2000
