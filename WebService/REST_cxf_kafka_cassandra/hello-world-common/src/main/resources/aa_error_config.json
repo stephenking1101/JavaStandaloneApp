@@ -1,0 +1,83 @@
+{
+  "INTERNAL_SERVER_ERROR": {
+    "error": "server_error",
+    "http_status": "500",
+    "error_description": "Internal server error."
+  },
+  "REQUIRED_PARAMETER_MISSING": {
+    "error": "invalid_request",
+    "http_status": "400",
+    "error_description": "Required parameter {0} is missing."
+  },
+  "REQUIRED_PARAMETER_INVALID": {
+    "error": "invalid_request",
+    "http_status": "400",
+    "error_description": "Required parameter {0} is invalid."
+  },
+  "OPTIONAL_PARAMETER_MISSING": {
+    "error": "invalid_request",
+    "http_status": "400",
+    "error_description": "At least one optional parameter should be required in the body."
+  },
+  "PARAMETER_INVALID": {
+    "error": "invalid_request",
+    "http_status": "400",
+    "error_description": "Invalid value of parameter: {0}."
+  },
+  "INVALID_CLIENT_ID": {
+    "error": "invalid_client_id",
+    "http_status": "400",
+    "error_description": "Client identifier is missing or invalid: {0}."
+  },
+  "TEMP_SERVICE_UNAVAILABLE": {
+    "error": "temporary_service_unavailable",
+    "error_description": "The {0} server is currently unable to handle the request due to a temporary overloading or maintenance of the server.",
+    "message": "temporary service unavailable."
+  },
+  "INVALID_NEW_PASSWORD": {
+    "error": "invalid_new_password",
+    "http_status": "400",
+    "error_description": "The new password doesn't meet password required format or strength."
+  },
+  "TEMP_PASSWORD_EXPIRED": {
+    "error": "temp_password_expired",
+    "http_status": "400",
+    "error_description": "The temporary password has expired."
+  },
+  "TEMP_PASSWORD_NOT_FOUND": {
+    "error": "temp_password_not_found",
+    "http_status": "400",
+    "error_description": "The temp password is not found by user identifier {0}."
+  },
+  "PREVIOUS_NEW_PASSWORD": {
+    "error": "password_match_password_history",
+    "http_status": "400",
+    "error_description": "New and old passwords must not match."
+  },
+  "MATCH_PASSWORD_HISTORY": {
+    "error": "password_match_password_history",
+    "http_status": "400",
+    "error_description": "New password has been previously used and cannot be reused."
+  },
+  "INVALID_ANSWER": {
+    "error": "invalid_answer",
+    "http_status": "400",
+    "error_description": "At least one answer is not correct"
+  },
+  "INVALID_UNAME_FORMAT": {
+    "error": "invalid_uname_format",
+    "http_status": "400",
+    "error_description": "The UNAME format is not valid."
+  },
+  "INVALID_REQUEST": {
+    "error": "invalid_request",
+    "http_status": "400",
+    "error_description": "The request is invalid."
+  },
+  "USER_ID_NOT_FOUND": {
+    "error": "invalid_request",
+    "http_status": "400",
+    "error_description": "api context and iam session and user id not exist."
+  }
+
+}
