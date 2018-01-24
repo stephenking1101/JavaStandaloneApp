@@ -27,6 +27,7 @@ public class HelloWorldConsumer {
 	    	//containerProperties.setAckMode(AckMode.MANUAL);
 	        logger.debug("save to cassandra {}", helloWorld);
 	        helloWorldDao.create(helloWorld);
+	        
 	        //commit the offset
 	        ack.acknowledge();
     	} catch (Throwable e){

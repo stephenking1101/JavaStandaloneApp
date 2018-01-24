@@ -67,7 +67,7 @@ public class HelloWorldServiceCT extends AbstractComponentTest {
         RestAssured.given().log().all().contentType(ContentType.JSON).body(objectMapper.writeValueAsString(helloWorld))
                 .when().post(HelloWorldTestConstants.URL_HELLOWORLD)
                 .then().log().all().assertThat()
-                .statusCode(Response.Status.NO_CONTENT.getStatusCode());
+                .statusCode(Response.Status.OK.getStatusCode());
 
         timeoutEquals(countBefore + 1, () -> EmbeddedCassandraHelper.queryForCount(countCql));
     }
@@ -87,7 +87,7 @@ public class HelloWorldServiceCT extends AbstractComponentTest {
         RestAssured.given().log().all().contentType(ContentType.JSON).body(objectMapper.writeValueAsString(helloWorld))
                 .when().post(HelloWorldTestConstants.URL_HELLOWORLD)
                 .then().log().all().assertThat()
-                .statusCode(Response.Status.NO_CONTENT.getStatusCode());
+                .statusCode(Response.Status.OK.getStatusCode());
 
         ConsumerRecord<String, String> received = (ConsumerRecord<String, String>) kafkaHelper.receive();
         assertEquals(uid, received.key());

@@ -27,6 +27,10 @@
             <groupId>com.example</groupId>
             <artifactId>sd-backend-localfile-impl</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>configuration-service-api</artifactId>
+        </dependency>
 
 		<dependency>
 		    <groupId>com.netflix.hystrix</groupId>

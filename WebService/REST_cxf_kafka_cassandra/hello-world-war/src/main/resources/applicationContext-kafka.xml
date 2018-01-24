@@ -32,6 +32,11 @@
     </bean>
 
     <!-- consumer -->
+    <bean id="originalKafkaConsumer" class="example.provider.OriginalKafkaConsumer"
+          init-method="init" lazy-init="false">
+        <constructor-arg name="consumerConfigs" ref="kafkaConsumerProperties"/>
+    </bean>
+    
     <bean id="kafkaConsumerProperties" class="java.util.HashMap">
         <constructor-arg>
             <map>

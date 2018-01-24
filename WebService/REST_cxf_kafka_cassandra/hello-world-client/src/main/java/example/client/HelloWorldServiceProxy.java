@@ -28,7 +28,7 @@ public class HelloWorldServiceProxy implements InvocationHandler {
     }
 
     private boolean isHelloWorldClientEnabled() {
-        return configurationService.getBoolean("helloworld.client.enabled", false);
+        return configurationService.getBoolean("helloworld.client.enabled", true);
     }
 
     //调用helloWorldService方法
