@@ -67,3 +67,7 @@ service discovery过程大致如下
 1. 查询System.getProperties(), key="XXX_XXX_SERVICE"  
 2. 查询System.getenv() 即环境变量,, key="XXX_XXX_SERVICE"  
 3. 查询"/etc/modules/service-disc/config/sd_service_sync.yml”(consul中service同步文件，路径可配）， key="xxx-xxx"  (在sd-backend-localfile-impl project 实现, sd-backend-consul-impl为利用consul服务发现的实现)
+
+## configuration-local-service contains the configuration management logic to load the configuration properties at runtime
+
+It reads the file from absolutePath='C:\etc\modules...'
