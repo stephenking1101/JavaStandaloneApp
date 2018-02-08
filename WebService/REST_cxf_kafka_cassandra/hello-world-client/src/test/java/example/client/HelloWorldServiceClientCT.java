@@ -111,10 +111,11 @@ public class HelloWorldServiceClientCT {
 
         HelloWorld helloWorld = new HelloWorld();
 
-        //Asynchronous involve
+        //Asynchronous involve, return a future object
         //new HelloWorldCommand(helloWorld).queue();
         
         //Synchronous involve
+        //使用execute()同步调用代码,效果等同于:helloWorldCommand.queue().get();
         new HelloWorldCommand(helloWorld).execute();
         times++;
         verify(helloWorldService, times(times)).sayHello(any(HelloWorld.class));
