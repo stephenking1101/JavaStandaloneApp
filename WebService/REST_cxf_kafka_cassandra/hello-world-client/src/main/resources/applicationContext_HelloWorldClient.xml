@@ -45,6 +45,7 @@
         </jaxrs-client:providers>
         <jaxrs-client:outInterceptors>
             <ref bean="logTraceInterceptor"/>
+            <ref bean="inputStreamCloseInterceptor" />
         </jaxrs-client:outInterceptors>
     </jaxrs-client:client>
 
@@ -60,6 +61,8 @@
           class="example.client.exception.HelloWorldClientServiceClientMapper" />
         
     <bean id="logTraceInterceptor" class="example.common.log.CxfLogTraceInterceptor"/>
+    
+    <bean id="inputStreamCloseInterceptor" class="example.client.interceptor.InputStreamCloseInterceptor"/>
 
 	<bean id="jacksonJaxbJsonProvider"
 		class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider" />
