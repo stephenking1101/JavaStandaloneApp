@@ -85,7 +85,7 @@ public class HelloWorldCommandTest {
             logger.debug("The mean (average) execution time (in milliseconds): " + metrics.getExecutionTimeMean());
             
             if (i == 3) {
-                sleep(500); // after the third time, the circuit breaker is open, need wait at least 500 ms to sync up the healthcounts
+                sleep(500); // after the third time, the circuit breaker is open, need wait at least 500 ms (defined in HystrixCommandProperties default_metricsHealthSnapshotIntervalInMilliseconds) to sync up the healthcounts
             }
         }
         
