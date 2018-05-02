@@ -6,6 +6,9 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.configuration.AbstractConfiguration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +18,11 @@ import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.netflix.config.ConcurrentCompositeConfiguration;
+import com.netflix.config.ConfigurationManager;
+import com.netflix.config.DynamicConfiguration;
+import com.netflix.hystrix.Hystrix;
+import com.netflix.hystrix.HystrixCircuitBreaker;
 import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandMetrics;
 
@@ -105,6 +113,27 @@ public class HelloWorldCommandTest {
         logger.debug("Error percentage: " +metrics.getHealthCounts().getErrorPercentage());
         logger.debug("Total requests sent: " + metrics.getHealthCounts().getTotalRequests());
         logger.debug("The mean (average) execution time (in milliseconds): " + metrics.getExecutionTimeMean());
+        
+        
+        /*HystrixCircuitBreaker.Factory.getInstance(HystrixCommandKey.Factory.asKey("HelloWorld")).markSuccess();
+        // shutdown all thread pools; waiting a little time for shutdown
+        Hystrix.reset(10, TimeUnit.SECONDS);
+        
+	    // shutdown configuration listeners that might have been activated by
+	    // Archaius
+	    if (ConfigurationManager.getConfigInstance() instanceof DynamicConfiguration) {
+	         ((DynamicConfiguration) ConfigurationManager.getConfigInstance())
+	                 .stopLoading();
+	    } else if (ConfigurationManager.getConfigInstance() instanceof ConcurrentCompositeConfiguration) {
+	         ConcurrentCompositeConfiguration config =
+	                 ((ConcurrentCompositeConfiguration) ConfigurationManager
+	                         .getConfigInstance());
+	         for (AbstractConfiguration innerConfig : config.getConfigurations()) {
+	             if (innerConfig instanceof DynamicConfiguration) {
+	                 ((DynamicConfiguration) innerConfig).stopLoading();
+	             }
+	         }
+	    }*/
     }
     
     private void mockServiceExceptionResponse(){
