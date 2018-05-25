@@ -63,6 +63,11 @@ HelloWorld helloWorld = new HelloWorld();
 
 ## hello-world-common contains the service discovery logic and DB access utils
 
+service discovery logic:  
+1. 按spi标准获得ServiceFactory的实现
+2. 通过AbstractSpringServiceFactory初始化spring context
+3. 通过ServiceFactory的实现获取bean, 背后其实是是调用applicationContext.getBean（）
+
 META-INF folder is used by ServiceLoader.class
 
 service discovery过程大致如下       
